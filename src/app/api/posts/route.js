@@ -264,6 +264,6 @@ export const GET = async (req) => {
 		return ApiResponse(posts);
 	} catch (error) {
 		console.log(error);
-		return new Response(JSON.stringify({ message: "Failed to get posts with hashtag, try again later" }), { status: 500 });
+		return new Response(JSON.stringify({ message: "Failed to get posts, try again later" }), { status: 500 });
 	}
 };
