@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-	baseURL: `http://localhost:3000/api/search`,
+	baseURL: `${process.env.API_URL}/api/search`,
 });
 
 export const searchUsersAndHashtags = async (searchTerm, searchType, limit) => {

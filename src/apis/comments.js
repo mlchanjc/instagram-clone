@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-	baseURL: `http://localhost:3000/api/comments`,
+	baseURL: `${process.env.API_URL}/api/comments`,
 });
 
 export const createComment = async (comment, postId, commentId) => {

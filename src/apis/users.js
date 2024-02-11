@@ -2,7 +2,7 @@ import axios from "axios";
 import onDownloadProgress from "@/utils/onDownloadProgress";
 
 const api = axios.create({
-	baseURL: `http://localhost:3000/api/users`,
+	baseURL: `${process.env.API_URL}/api/users`,
 });
 
 export const getUserInfo = async (username) => {

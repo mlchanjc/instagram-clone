@@ -2,7 +2,7 @@ import axios from "axios";
 import onDownloadProgress from "@/utils/onDownloadProgress";
 
 const api = axios.create({
-	baseURL: `http://localhost:3000/api/posts`,
+	baseURL: `${process.env.API_URL}/api/posts`,
 });
 
 export const createPost = async (photos, description, likeHidden, commentDisabled) => {
