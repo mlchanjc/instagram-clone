@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { GoHome } from "react-icons/go";
 import { GoHomeFill } from "react-icons/go";
 import { IoSearchOutline } from "react-icons/io5";
@@ -21,6 +21,10 @@ const Navbar = memo(() => {
 	const [isSearching, setIsSearching] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [showMoreList, setShowMoreList] = useState(false);
+
+	if (status === "unauthenticated") {
+		window.location.href = "/auth";
+	}
 
 	return (
 		<nav className="sticky top-0 flex flex-col border-r h-screen p-6 3xl:w-[335px] xl:w-64 w-[76px] flex-shrink-0 select-none outline-none z-10 text-sm">
@@ -120,7 +124,7 @@ const Navbar = memo(() => {
 					<div className="absolute bottom-12 w-full border rounded-md">
 						<ul>
 							<li>
-								<button onClick={signOut} className="w-full p-4 text-left active:opacity-60">
+								<button onClick={() => signOut({ callbackUrl: "/auth", redirect: true })} className="w-full p-4 text-left active:opacity-60">
 									Log out
 								</button>
 							</li>
