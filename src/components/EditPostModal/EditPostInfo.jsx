@@ -85,15 +85,15 @@ const EditPostInfo = memo(() => {
 	}, []);
 
 	return (
-		<div className="border-l flex flex-col xl:w-[340px] lg:w-[235px] w-full h-full duration-300">
-			<div className="flex flex-col h-1/2 py-2 border-b">
+		<div className="border-l flex flex-col xl:w-[340px] lg:w-[235px] w-full h-full duration-300 overflow-auto">
+			<div className="flex flex-col h-2/3 md:h-1/2 py-2 border-b">
 				<div className="flex h-12 p-3 space-x-3 items-center border-t lg:border-0">
 					<div className="relative w-7 h-7">
 						<Image src={session.user.picture} alt={`picture`} className="object-contain rounded-full" fill />
 					</div>
 					<p className="text-sm font-semibold">{session.user.username}</p>
 				</div>
-				<div className="h-full outline-none p-3 overflow-auto relative text-blue">
+				<div className="h-full outline-none overflow-auto relative text-blue">
 					<textarea
 						maxLength={2200}
 						ref={div1Ref}
@@ -101,13 +101,13 @@ const EditPostInfo = memo(() => {
 						onChange={handleChange}
 						onClick={handleSetCaretPos}
 						onScroll={handleScroll}
-						className="absolute inset-0 outline-none p-3 overflow-auto text-transparent caret-black z-10 whitespace-pre-wrap text-sm bg-transparent resize-none"
+						className="absolute inset-0 outline-none px-3 sm:py-3 overflow-auto text-transparent caret-black z-10 whitespace-pre-wrap text-sm bg-transparent resize-none"
 					></textarea>
-					<div ref={div2Ref} className="absolute inset-0 outline-none p-3 overflow-auto opacity-100 whitespace-pre-wrap break-words select-none text-sm">
+					<div ref={div2Ref} className="absolute inset-0 outline-none px-3 sm:py-3 overflow-auto opacity-100 whitespace-pre-wrap break-words select-none text-sm">
 						<DescriptionText description={description} />
 					</div>
 				</div>
-				<div className="p-3 flex justify-between items-center">
+				<div className="px-3 sm:py-3 flex justify-between items-center">
 					<div className="flex items-center" ref={emojiButtonRef}>
 						<button className="outline-none" onClick={() => setIsShowingEmoji((prev) => !prev)}>
 							<HiOutlineEmojiHappy size={20} color="gray" />
@@ -129,7 +129,7 @@ const EditPostInfo = memo(() => {
 					<div className="text-gray-400 text-xs">{description.length + "/2200"}</div>
 				</div>
 			</div>
-			<div className="flex flex-col h-1/2 overflow-auto">
+			<div className="flex flex-col h-1/3 md:h-1/2 overflow-auto">
 				<TagList />
 				<AdvancedSettings />
 			</div>

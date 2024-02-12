@@ -173,7 +173,7 @@ const PostContent = ({ post, postId, deletePostEffect }) => {
 				</div>
 				{isShowingOptionModal && (
 					<TopModal onClick={() => setIsShowingOptionModal(false)}>
-						<div className="h-fit w-3/4 sm:w-[400px] text-md">
+						<div className="h-fit w-[80vw] sm:w-[400px]">
 							<div className="rounded-lg shadow-lg flex flex-col items-center w-full h-full bg-white">
 								<div className="flex flex-col w-full h-full divide-y divide-gray-300">
 									<button className="py-4 text-red-500 font-semibold" onClick={handleDeletePost}>

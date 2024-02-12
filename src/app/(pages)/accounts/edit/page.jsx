@@ -105,14 +105,14 @@ const EditAccountPage = () => {
 							</button>
 						</div>
 					</form>
-					<div className="flex flex-col border border-red-500 rounded-lg p-8 gap-y-4 w-2/3">
-						<div className="flex items-center justify-between gap-x-4">
+					<div className="flex flex-col border border-red-500 rounded-lg p-8 gap-y-4 w-full lg:w-2/3 text-sm md:text-base">
+						<div className="flex items-center justify-between gap-x-2">
 							<strong>{`Change the visibility of your account to ${userData.isPrivate ? "public" : "private"}`}</strong>
 							<button className="text-sm text-white bg-red-500 hover:bg-red-600 active:bg-red-400 py-2 px-4 rounded-md" onClick={handleChangeVisibility}>
 								<strong>Change</strong>
 							</button>
 						</div>
-						<div className="flex items-center justify-between gap-x-4">
+						<div className="flex items-center justify-between gap-x-2">
 							<strong>Delete your account permanently</strong>
 							<button className="text-sm text-white bg-red-500 hover:bg-red-600 active:bg-red-400 py-2 px-4 rounded-md" onClick={handleDeleteAccount}>
 								<strong>Delete</strong>

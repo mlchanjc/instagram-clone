@@ -20,7 +20,7 @@ const ExplorePage = () => {
 
 	return (
 		<main className="flex items-center justify-center w-full h-full">
-			<div className="flex items-center w-11/12 lg:w-[935px] h-full mx-10 mt-7">
+			<div className="flex items-center w-full lg:w-[935px] h-full lg:mx-10 md:mt-7">
 				<PostCardGrid initData={initPostData} handleFetchMore={fetchPosts} />
 			</div>
 		</main>

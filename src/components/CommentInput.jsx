@@ -141,24 +141,22 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 	return (
 		<div className="flex w-full gap-x-2 items-center text-sm relative">
 			{inPostContent && (
-				<>
-					<button onClick={() => setIsShowingEmoji((prev) => !prev)} className="relative">
-						<HiOutlineEmojiHappy size={26} />
-						<div className="absolute -top-2 left-0 -translate-y-full select-none" onClick={(e) => e.stopPropagation()} ref={emojiPickerRef}>
-							{isShowingEmoji && (
-								<EmojiPicker
-									onEmojiClick={onEmojiClick}
-									autoFocusSearch={false}
-									Theme={"auto"}
-									lazyLoadEmojis={true}
-									previewConfig={{
-										showPreview: false,
-									}}
-								/>
-							)}
-						</div>
-					</button>
-				</>
+				<button onClick={() => setIsShowingEmoji((prev) => !prev)} className="relative" ref={emojiPickerRef}>
+					<HiOutlineEmojiHappy size={26} />
+					<div className="absolute -top-2 left-0 -translate-y-full select-none" onClick={(e) => e.stopPropagation()}>
+						{isShowingEmoji && (
+							<EmojiPicker
+								onEmojiClick={onEmojiClick}
+								autoFocusSearch={false}
+								Theme={"auto"}
+								lazyLoadEmojis={true}
+								previewConfig={{
+									showPreview: false,
+								}}
+							/>
+						)}
+					</div>
+				</button>
 			)}
 			{searchResult.length > 0 && (
 				<ul className={`absolute top-0 left-0 -translate-y-full bg-white min-w-[50%] max-w-full w-fit border divide-y max-h-[196px] overflow-auto`}>
@@ -213,24 +211,22 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 			{comment.length > 0 && <button onClick={handleSubmit}>Send</button>}
 
 			{!inPostContent && (
-				<>
-					<button onClick={() => setIsShowingEmoji((prev) => !prev)} className="relative">
-						<HiOutlineEmojiHappy />
-						<div className="absolute top-0 left-4 -translate-y-full select-none" onClick={(e) => e.stopPropagation()} ref={emojiPickerRef}>
-							{isShowingEmoji && (
-								<EmojiPicker
-									onEmojiClick={onEmojiClick}
-									autoFocusSearch={false}
-									Theme={"auto"}
-									lazyLoadEmojis={true}
-									previewConfig={{
-										showPreview: false,
-									}}
-								/>
-							)}
-						</div>
-					</button>
-				</>
+				<button onClick={() => setIsShowingEmoji((prev) => !prev)} className="relative" ref={emojiPickerRef}>
+					<HiOutlineEmojiHappy />
+					<div className="absolute top-0 left-4 -translate-y-full select-none" onClick={(e) => e.stopPropagation()}>
+						{isShowingEmoji && (
+							<EmojiPicker
+								onEmojiClick={onEmojiClick}
+								autoFocusSearch={false}
+								Theme={"auto"}
+								lazyLoadEmojis={true}
+								previewConfig={{
+									showPreview: false,
+								}}
+							/>
+						)}
+					</div>
+				</button>
 			)}
 		</div>
 	);

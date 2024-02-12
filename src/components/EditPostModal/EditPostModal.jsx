@@ -69,7 +69,7 @@ const EditPostModal = ({ editingPost, setIsShowingEditModal, updatePost }) => {
 	};
 
 	return (
-		<div className="rounded-lg shadow-lg flex flex-col items-center w-full h-full bg-white">
+		<div className="rounded-lg shadow-lg flex flex-col items-center w-full h-[70vh] md:h-[764px] bg-white">
 			<div className="flex items-center justify-between w-full px-4 border-b">
 				<button
 					onClick={() => {

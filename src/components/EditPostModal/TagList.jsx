@@ -20,7 +20,7 @@ export default function TagList() {
 
 	return (
 		tags[currentPhoto]?.length > 0 && (
-			<div className="flex flex-col overflow-hidden p-0.5">
+			<div className="flex flex-col p-0.5">
 				<div className={`flex justify-between items-center p-2 ${isExpanded && "font-extrabold"}`}>
 					Tag list:
 					<button onClick={() => setIsExpanded((prev) => !prev)} className={`${isExpanded ? "rotate-90" : "-rotate-90"} duration-200`}>

@@ -71,12 +71,12 @@ const UserPage = () => {
 
 	return (
 		userData && (
-			<div className="w-full flex justify-center">
+			<main className="w-full flex justify-center">
 				{showModal && <CreatePost setShowTopModal={setShowModal} />}
-				<div className="flex flex-col lg:w-[975px] px-5">
-					<div className="flex min-h-fit my-10">
-						<div className="flex items-center px-20 h-full mr-4">
-							<div className="flex-shrink-0 aspect-square relative w-[150px] h-[150px]">
+				<div className="flex flex-col w-full lg:w-[975px] md:px-5">
+					<div className="flex min-h-fit my-4 md:my-10">
+						<div className="flex items-center px-6 md:px-20 h-full mr-4">
+							<div className="flex-shrink-0 aspect-square relative w-[80px] h-[80px] md:w-[150px] md:h-[150px]">
 								<Image alt="picture" src={userData.picture} className="object-contain rounded-full" fill sizes="50vw" />
 							</div>
 						</div>
@@ -100,20 +100,20 @@ const UserPage = () => {
 									</button>
 								)}
 							</div>
-							<div className="flex gap-x-10 my-1">
-								<div>
-									<span className="font-bold">{userData.postCount}</span> {`post${userData.postCount > 1 ? "s" : ""}`}
-								</div>
-								<div>
-									<span className="font-bold">{userData.followerCount}</span> {`follower${userData.followerCount > 1 ? "s" : ""}`}
-								</div>
-								<div>
-									<span className="font-bold">{userData.followingCount}</span> {"following"}
-								</div>
+							<div className="flex gap-x-1 md:space-x-10 my-1 text-sm md:text-base">
+								<strong>{userData.postCount}</strong> {`post${userData.postCount > 1 ? "s" : ""}`}
+								<strong>{userData.followerCount}</strong> {`follower${userData.followerCount > 1 ? "s" : ""}`}
+								<strong>{userData.followingCount}</strong> {"following"}
 							</div>
-							<p className="text-sm font-bold">{userData.nickname}</p>
-							<FormattedText text={userData.biography} />
+							<div className="hidden md:block text-sm">
+								<p className="text-sm font-bold">{userData.nickname}</p>
+								<FormattedText text={userData.biography} textSize={"sm"} />
+							</div>
 						</div>
+					</div>
+					<div className="block md:hidden px-8 mb-4 text-sm">
+						<p className="text-sm font-bold">{userData.nickname}</p>
+						<FormattedText text={userData.biography} />
 					</div>
 					<div className="border-t flex flex-col items-center h-full">
 						<div className="flex gap-x-14 text-xs text-gray-500 h-12">
@@ -184,7 +184,7 @@ const UserPage = () => {
 						)}
 					</div>
 				</div>
-			</div>
+			</main>
 		)
 	);
 };

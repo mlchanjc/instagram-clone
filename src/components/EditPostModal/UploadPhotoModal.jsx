@@ -45,7 +45,7 @@ export default function UploadPhotoModal() {
 		<div className="rounded-lg shadow-lg flex flex-col items-center w-full bg-white">
 			<h3 className="flex p-2 rounded-t text-xl font-semibold justify-center">Create new post</h3>
 
-			<div className="flex flex-col justify-center items-center h-[764px] w-full border-t outline-none gap-y-3" {...getRootProps()}>
+			<div className="flex flex-col justify-center items-center h-[70vh] md:h-[764px] w-full border-t outline-none gap-y-3" {...getRootProps()}>
 				<Image className="select-none" src="/assets/dropzone.svg" width={120} height={120} alt="DropzoneImage" priority />
 				<strong>Drag and drop photos here, or click to select</strong>
 			</div>

@@ -38,8 +38,14 @@ const PostCardGrid = memo(({ initData, handleFetchMore }) => {
 	};
 
 	useEffect(() => {
+		// change url when click in or exit post
 		if (showPostModal) window.history.replaceState("", "", `/p/${postData[currentPost]._id}`);
 		else window.history.replaceState("", "", `${originalUrl.current}`);
+
+		// fetch more posts when viewing the second last posts
+		if (!fetchedAll.current && currentPost + 2 > postData?.length) {
+			handleFetch();
+		}
 	}, [showPostModal, currentPost]);
 
 	useEffect(() => {
@@ -48,6 +54,7 @@ const PostCardGrid = memo(({ initData, handleFetchMore }) => {
 		if (initData?.length < 12) fetchedAll.current = true;
 		else fetchedAll.current = false;
 
+		// observe the loading svg, fetch posts if enter screen
 		const observer = new IntersectionObserver(
 			(entries) => {
 				if (entries[0].isIntersecting) {

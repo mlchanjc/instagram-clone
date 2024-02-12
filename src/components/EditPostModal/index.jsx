@@ -24,7 +24,7 @@ export default function CreatePost({ setShowModal }) {
 
 	return (
 		<BottomModal onClick={handleLeave}>
-			<div className={`relative h-fit w-[92vw] lg:w-[800px] ${photos.length > 0 && "xl:w-[1104px]"} duration-300 select-none`}>
+			<div className={`relative h-fit w-[92vw] lg:w-[800px] ${photos.length > 0 ? "xl:w-[1104px]" : ""} duration-300 select-none`}>
 				{photos.length === 0 ? <UploadPhotoModal /> : <EditPostModal />}
 			</div>
 		</BottomModal>

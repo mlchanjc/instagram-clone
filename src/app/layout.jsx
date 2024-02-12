@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
 		<html lang="en">
 			<body>
 				<Provider>
-					<div className="flex flex-col md:flex-row w-full h-fit">
+					<div className="flex flex-col md:flex-row w-full h-fit mb-16 md:mb-0">
 						{pathname !== "/auth" && (
 							<>
 								<ProgressBar />

@@ -46,8 +46,6 @@ const UserPreview = memo(({ username }) => {
 		});
 	};
 
-	console.log(userPreviewRef?.current?.getBoundingClientRect().top);
-
 	return (
 		<span>
 			<Link href={`/${username}`}>
