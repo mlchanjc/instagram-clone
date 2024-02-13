@@ -81,11 +81,11 @@ const PostContent = ({ post, postId, deletePostEffect }) => {
 
 	return (
 		postData && (
-			<div className="w-[92vw] max-w-[1270px] flex aspect-[4/3] text-sm outline-none">
-				<div className="w-[63%] h-full">
+			<div className="w-[92vw] max-w-[1270px] flex md:flex-row flex-col h-[85vh] md:h-auto md:aspect-[4/3] text-sm outline-none">
+				<div className="w-full md:w-[63%] h-1/2 md:h-full">
 					<PhotoCarousel photos={postData.photos} setLiked={setLiked} postId={postData._id} />
 				</div>
-				<div className="w-[37%] px-4 py-3 flex flex-col bg-white gap-y-3 border border-gray-300">
+				<div className="w-full md:w-[37%] px-4 py-3 flex flex-col bg-white gap-y-3 border border-gray-300 h-1/2 md:h-full">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center space-x-2">
 							<div className="relative w-8 h-8">

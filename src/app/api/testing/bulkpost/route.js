@@ -1,4 +1,3 @@
-import { getToken } from "next-auth/jwt";
 import { connectToDB } from "@/utils/database";
 import { User, Post, Hashtag } from "@/models";
 import mongoose from "mongoose";
@@ -16,7 +15,7 @@ export const POST = async (req) => {
 		const categories = ["abstract", "animals", "business", "cats", "city", "food", "nature", "people", "sports", "technics", "transport"];
 
 		let a = performance.now();
-		for (let i = 0; i < 1000; i++) {
+		for (let i = 0; i < 2000; i++) {
 			const randomIndex = Math.floor(Math.random() * users.length);
 
 			const photos = [];
@@ -44,8 +43,8 @@ export const POST = async (req) => {
 
 			let tag = "";
 			Array.from({ length: Math.floor(Math.random() * 5) + 3 }).forEach((_, i) => {
-				const ts = [faker.word.noun(), faker.vehicle.color(), faker.word.adjective()];
-				const t = ts[Math.floor(Math.random() * 3)].replace(" ", "").replace("-", "").replace(",", "").replace("'", "");
+				const ts = [faker.vehicle.color(), faker.word.adjective()];
+				const t = ts[Math.floor(Math.random() * 2)].replace(" ", "").replace("-", "").replace(",", "").replace("'", "");
 				tag += ` #${t}`;
 			});
 

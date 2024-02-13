@@ -40,7 +40,7 @@ const UserPage = () => {
 
 	const fetchUserInfo = async () => {
 		const data = await callApi(getUserInfo(username));
-		if (!data.isOwner && viewingTab === "saved") router.push(`/${username}`);
+		if (!data?.isOwner && viewingTab === "saved") router.push(`/${username}`);
 		setUserData(data);
 	};
 

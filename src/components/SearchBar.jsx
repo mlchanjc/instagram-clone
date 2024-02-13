@@ -97,7 +97,7 @@ const SearchBar = ({ isSearching, setIsSearching }) => {
 					searchResult.length > 0 ? (
 						<ul className="w-full overflow-hidden mb-7">
 							{searchResult.map((item) => {
-								return <SearchResultItem key={item._id} item={item} />;
+								return <SearchResultItem key={item._id} item={item} setIsSearching={setIsSearching} />;
 							})}
 						</ul>
 					) : (

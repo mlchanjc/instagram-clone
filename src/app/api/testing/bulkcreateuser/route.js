@@ -1,7 +1,5 @@
-import { getToken } from "next-auth/jwt";
 import { connectToDB } from "@/utils/database";
-import ApiResponse from "@/utils/ApiResponse";
-import { User, Post } from "@/models";
+import { User } from "@/models";
 import { faker } from "@faker-js/faker";
 
 export const POST = async (req) => {
@@ -9,7 +7,7 @@ export const POST = async (req) => {
 	try {
 		const fakeUsers = [];
 
-		for (let i = 0; i < 50; i++) {
+		for (let i = 0; i < 200; i++) {
 			const sex = faker.person.sex();
 			const firstName = faker.person.firstName(sex);
 			const lastName = faker.person.lastName(sex);

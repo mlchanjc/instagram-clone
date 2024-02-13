@@ -195,7 +195,6 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 				</ul>
 			)}
 			<textarea
-				autoFocus={inPostContent}
 				ref={inputRef}
 				value={comment}
 				onClick={() => {
