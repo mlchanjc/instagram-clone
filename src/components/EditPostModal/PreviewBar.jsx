@@ -97,6 +97,7 @@ const PreviewBar = () => {
 		for (let i = 0; i < selectedFiles.length; i++) {
 			await func(selectedFiles[i]);
 		}
+		setCurrentPhoto(photos.length);
 		setPhotos((prev) => [...prev, ...temp]);
 		setTags((prev) => {
 			const newArray = Array.from({ length: temp.length }, () => []);

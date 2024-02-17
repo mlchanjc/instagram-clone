@@ -67,8 +67,24 @@ export default function PreviewOverlay() {
 	const tagSearchY = photoRef.current?.getBoundingClientRect().top + photoRef.current?.getBoundingClientRect().height * (mousePos.y / 100);
 
 	return (
-		<div className="absolute h-full flex items-center justify-center aspect-square bg-white">
-			<Image ref={photoRef} alt="UploadedPhoto" draggable={false} className="select-none object-contain" src={photos[currentPhoto]} fill onClick={handleClick} />
+		<div className="h-full w-full flex items-center justify-center lg:aspect-square bg-white">
+			<div className="aspect-square h-full relative">
+				<Image
+					ref={photoRef}
+					alt="UploadedPhoto"
+					draggable={false}
+					className="select-none object-contain"
+					src={photos[currentPhoto]}
+					fill
+					onClick={handleClick}
+					sizes="100vw"
+				/>
+				<div className="absolute w-full h-full pointer-events-none">
+					{tags[currentPhoto]?.map((tag, i) => {
+						return <TagBubble key={`tag${i}`} tag={tag} />;
+					})}
+				</div>
+			</div>
 			<div ref={tagSearchRef}>
 				<UserTagSearchBox tagSearchX={tagSearchX} tagSearchY={tagSearchY} showTagSearch={showTagSearch} setShowTagSearch={setShowTagSearch} mousePos={mousePos} />
 			</div>
@@ -97,12 +113,6 @@ export default function PreviewOverlay() {
 					))}
 				</div>
 			)}
-
-			<div className="absolute w-full h-full pointer-events-none">
-				{tags[currentPhoto]?.map((tag, i) => {
-					return <TagBubble key={`tag${i}`} tag={tag} />;
-				})}
-			</div>
 		</div>
 	);
 }

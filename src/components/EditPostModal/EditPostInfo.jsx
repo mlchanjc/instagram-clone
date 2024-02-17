@@ -85,7 +85,7 @@ const EditPostInfo = memo(() => {
 	}, []);
 
 	return (
-		<div className="border-l flex flex-col xl:w-[340px] lg:w-[235px] w-full h-full duration-300 overflow-auto">
+		<div className="lg:border-l flex flex-col xl:w-[340px] lg:w-[235px] w-full h-1/2 lg:h-full duration-300 overflow-auto">
 			<div className="flex flex-col h-2/3 md:h-1/2 py-2 border-b">
 				<div className="flex h-12 p-3 space-x-3 items-center border-t lg:border-0">
 					<div className="relative w-7 h-7">

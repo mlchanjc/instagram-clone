@@ -72,7 +72,7 @@ const UserPage = () => {
 	return (
 		userData && (
 			<main className="w-full flex justify-center">
-				{showModal && <CreatePost setShowTopModal={setShowModal} />}
+				{showModal && <CreatePost setShowModal={setShowModal} />}
 				<div className="flex flex-col w-full lg:w-[975px] md:px-5">
 					<div className="flex min-h-fit my-4 md:my-10">
 						<div className="flex items-center px-6 md:px-20 h-full mr-4">

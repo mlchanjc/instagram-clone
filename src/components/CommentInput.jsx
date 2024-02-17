@@ -210,9 +210,11 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 			{comment.length > 0 && <button onClick={handleSubmit}>Send</button>}
 
 			{!inPostContent && (
-				<button onClick={() => setIsShowingEmoji((prev) => !prev)} className="relative" ref={emojiPickerRef}>
-					<HiOutlineEmojiHappy />
-					<div className="absolute top-0 left-4 -translate-y-full select-none" onClick={(e) => e.stopPropagation()}>
+				<div className="relative flex items-center">
+					<button onClick={() => setIsShowingEmoji((prev) => !prev)} ref={emojiPickerRef}>
+						<HiOutlineEmojiHappy />
+					</button>
+					<div className="absolute -top-4 left-4 -translate-y-full select-none -translate-x-full lg:translate-x-0" onClick={(e) => e.stopPropagation()}>
 						{isShowingEmoji && (
 							<EmojiPicker
 								onEmojiClick={onEmojiClick}
@@ -225,7 +227,7 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 							/>
 						)}
 					</div>
-				</button>
+				</div>
 			)}
 		</div>
 	);

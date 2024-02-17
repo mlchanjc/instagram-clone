@@ -82,7 +82,7 @@ const UserTagSearchBox = ({ tagSearchX, tagSearchY, showTagSearch, mousePos, set
 				<ul className="p-2 space-y-2 overflow-auto">
 					{searchResult.map((user, i) => {
 						return (
-							<li>
+							<li key={`searchResult${user.username}`}>
 								<button className="flex items-center space-x-2 px-2 py-1 hover:bg-yellow-50" onClick={() => handleSelectUser(i)}>
 									<div className="relative rounded-full w-7 h-7">
 										<Image alt="picture" src={user.picture} fill className="object-contain rounded-full" />

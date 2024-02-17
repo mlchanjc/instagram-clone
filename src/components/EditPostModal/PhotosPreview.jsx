@@ -7,7 +7,7 @@ const PhotosPreview = memo(() => {
 	const [showPreviewBar, setShowPreviewBar] = useState(null); //init as null to not show animation at first time
 
 	return (
-		<div className="flex items-center w-full lg:w-[764px] h-full">
+		<div className="flex items-center w-full lg:w-[764px] h-1/2 lg:h-full">
 			<div className="flex relative justify-center items-center h-full w-full outline-none bg-gray-500">
 				<PreviewOverlay />
 

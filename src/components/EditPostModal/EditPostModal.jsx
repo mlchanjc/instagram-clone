@@ -49,6 +49,13 @@ const EditPostModal = ({ editingPost, setIsShowingEditModal, updatePost }) => {
 		}
 
 		await callApi(createPost(photoArray, description, likeHidden, commentDisabled));
+		setPhotos([]);
+		setCurrentPhoto(0);
+		setTags([]);
+		setLikeHidden(false);
+		setCommentDisabled(false);
+		setDescription("");
+		window.alert("Post uploaded");
 	};
 
 	const handleUpdatePost = async () => {
@@ -64,12 +71,12 @@ const EditPostModal = ({ editingPost, setIsShowingEditModal, updatePost }) => {
 			photoArray.push(photo);
 		}
 
-		await updatePost({ photos: photoArray, description, likeHidden, commentDisabled });
+		await callApi(updatePost({ photos: photoArray, description, likeHidden, commentDisabled }));
 		window.alert("Post updated");
 	};
 
 	return (
-		<div className="rounded-lg shadow-lg flex flex-col items-center w-full h-[70vh] md:h-[764px] bg-white">
+		<div className="rounded-lg shadow-lg flex flex-col items-center w-full h-[80vh] md:h-[808.8px] bg-white">
 			<div className="flex items-center justify-between w-full px-4 border-b">
 				<button
 					onClick={() => {
@@ -83,7 +90,7 @@ const EditPostModal = ({ editingPost, setIsShowingEditModal, updatePost }) => {
 					{editingPost ? "Done" : "Upload"}
 				</button>
 			</div>
-			<div className="flex w-full flex-col lg:flex-row lg:h-[764px] h-[80vh]">
+			<div className="flex w-full flex-col lg:flex-row lg:h-[764px] flex-grow">
 				<PhotosPreview />
 				<EditPostInfo />
 			</div>
