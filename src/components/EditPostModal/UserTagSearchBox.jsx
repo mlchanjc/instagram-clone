@@ -2,7 +2,6 @@ import { useState, useContext, useRef, useCallback } from "react";
 import { PhotoContext } from "../../contexts/PostInfoContexts";
 import Image from "next/image";
 import _ from "lodash";
-import useCallApi from "@/hooks/useCallApi";
 import { searchUsersAndHashtags } from "@/apis/search";
 import { MdCancel } from "react-icons/md";
 
@@ -10,12 +9,11 @@ const UserTagSearchBox = ({ tagSearchX, tagSearchY, showTagSearch, mousePos, set
 	const searchBarRef = useRef(null);
 	const [searchResult, setSearchResult] = useState([]);
 	const { currentPhoto, tags, setTags } = useContext(PhotoContext);
-	const callApi = useCallApi();
 
 	const handleSearchRef = useRef();
 	handleSearchRef.current = async (searchTerm) => {
 		if (searchTerm !== "") {
-			const data = await callApi(searchUsersAndHashtags(searchTerm, "user", 12));
+			const data = await searchUsersAndHashtags(searchTerm, "user", 12);
 			let i = 0;
 			while (i < data.length) {
 				const isInTagList = tags[currentPhoto].some((tag) => tag.user._id === data[i]._id);
@@ -83,7 +81,7 @@ const UserTagSearchBox = ({ tagSearchX, tagSearchY, showTagSearch, mousePos, set
 					{searchResult.map((user, i) => {
 						return (
 							<li key={`searchResult${user.username}`}>
-								<button className="flex items-center space-x-2 px-2 py-1 hover:bg-yellow-50" onClick={() => handleSelectUser(i)}>
+								<button className="flex items-center space-x-2 px-2 py-1 hover:bg-yellow-50 w-full" onClick={() => handleSelectUser(i)}>
 									<div className="relative rounded-full w-7 h-7">
 										<Image alt="picture" src={user.picture} fill className="object-contain rounded-full" />
 									</div>

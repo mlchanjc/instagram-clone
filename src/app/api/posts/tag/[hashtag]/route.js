@@ -7,7 +7,6 @@ export const GET = async (req, { params }) => {
 	await connectToDB();
 	try {
 		const token = await getToken({ req });
-		const user = token.user;
 
 		const hashtag = params.hashtag;
 
@@ -31,13 +30,17 @@ export const GET = async (req, { params }) => {
 			})
 			.lean();
 
-		// dont return likeCount if likeHidden unless is owner
-		posts.forEach((post) => {
-			const isOwner = user._id === post.user._id.toString();
-			post.isOwner = isOwner;
+		if (token) {
+			const user = token.user;
 
-			if (post.likeHidden && !isOwner) post.likeCount = null;
-		});
+			// dont return likeCount if likeHidden unless is owner
+			posts.forEach((post) => {
+				const isOwner = user?._id === post.user._id.toString();
+				post.isOwner = isOwner;
+
+				if (post.likeHidden && !isOwner) post.likeCount = null;
+			});
+		}
 
 		const response = {
 			posts,

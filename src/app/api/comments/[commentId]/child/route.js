@@ -7,7 +7,6 @@ export const GET = async (req, { params }) => {
 	await connectToDB();
 	try {
 		const token = await getToken({ req });
-		const user = token.user;
 
 		const commentId = params.commentId;
 
@@ -18,22 +17,30 @@ export const GET = async (req, { params }) => {
 			})
 			.lean();
 
-		// get all the liked comments
-		const commentIds = childComments.map((comment) => new mongoose.Types.ObjectId(comment._id));
+		if (token) {
+			const user = token.user;
 
-		let likedComments = await Like.find(
-			{
-				comment: { $in: commentIds },
-				user: new mongoose.Types.ObjectId(user._id),
-			},
-			{ _id: 0, comment: 1 }
-		).lean();
+			// get all the liked comments
+			const commentIds = childComments.map((comment) => new mongoose.Types.ObjectId(comment._id));
 
-		likedComments.forEach((comment, i) => (likedComments[i] = comment.comment.toString()));
+			let likedComments = await Like.find(
+				{
+					comment: { $in: commentIds },
+					user: new mongoose.Types.ObjectId(user._id),
+				},
+				{ _id: 0, comment: 1 }
+			).lean();
 
-		childComments.forEach((comment, i) => {
-			childComments[i].hasLiked = likedComments.includes(comment._id.toString());
-		});
+			likedComments.forEach((comment) => (comment = comment.comment.toString()));
+
+			childComments.forEach((comment) => {
+				comment.hasLiked = likedComments.includes(comment._id.toString());
+			});
+		} else {
+			childComments.forEach((comment) => {
+				comment.hasLiked = false;
+			});
+		}
 
 		return new Response(JSON.stringify(childComments), { status: 200 });
 	} catch (error) {

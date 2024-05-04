@@ -4,14 +4,14 @@ import TagBubble from "@/components/TagBubble";
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import Image from "next/image";
-import useCallApi from "@/hooks/useCallApi";
+import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
 
 const PhotoCarousel = memo(({ photos, setLiked, postId }) => {
+	const requiredTokenApi = useRequiredTokenApi();
 	const [isShowingAnimation, setIsShowingAnimation] = useState(false);
 	const [showTags, setShowTags] = useState(false);
 	const [currentPhoto, setCurrentPhoto] = useState(0);
 	const timeout = useRef(null);
-	const callApi = useCallApi();
 
 	useEffect(() => {
 		if (isShowingAnimation)
@@ -27,14 +27,14 @@ const PhotoCarousel = memo(({ photos, setLiked, postId }) => {
 		}, 200);
 	};
 
-	const handleDoubleClick = async () => {
+	const handleDoubleClick = requiredTokenApi(async () => {
 		clearTimeout(timeout.current);
 		if (!isShowingAnimation) {
-			const { liked } = await callApi(likePost(postId));
+			const { liked } = await likePost(postId);
 			setLiked(liked);
 			setIsShowingAnimation(liked);
 		}
-	};
+	});
 
 	return (
 		photos && (

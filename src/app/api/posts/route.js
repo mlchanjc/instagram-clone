@@ -111,9 +111,6 @@ export const POST = async (req) => {
 export const GET = async (req) => {
 	await connectToDB();
 	try {
-		const token = await getToken({ req });
-		const user = token.user;
-
 		const searchParams = req.nextUrl.searchParams;
 		const startIndex = parseInt(searchParams.get("start_index"));
 		const limit = parseInt(searchParams.get("limit"));
@@ -122,69 +119,34 @@ export const GET = async (req) => {
 			return new Response(JSON.stringify({ message: "Invalid params" }), { status: 400 });
 		}
 
-		const followingIds = await Follow.aggregate([
-			{
-				$match: { follower: new mongoose.Types.ObjectId(user._id) },
-			},
-			{
-				$sample: { size: 10 },
-			},
-			{
-				$project: {
-					following: 1,
-					_id: 0,
-				},
-			},
-		]);
+		const token = await getToken({ req });
 
-		followingIds.forEach((following, i) => (followingIds[i] = following.following));
+		let posts = [];
 
-		let posts = await Post.aggregate([
-			{
-				$match: { user: { $in: followingIds } },
-			},
-			{
-				$sort: {
-					_id: -1,
-				},
-			},
-			{
-				$skip: startIndex,
-			},
-			{
-				$limit: limit,
-			},
-			{
-				$lookup: {
-					from: "users",
-					localField: "user",
-					foreignField: "_id",
-					as: "user",
-					pipeline: [
-						{
-							$project: {
-								username: "$username",
-								picture: "$picture",
-							},
-						},
-					],
-				},
-			},
-			{
-				$addFields: {
-					user: { $arrayElemAt: ["$user", 0] },
-				},
-			},
-		]);
+		if (token) {
+			// if token exists(logged in), return following users' posts
+			const user = token.user;
 
-		posts = await Post.populate(posts, { path: "photos.tags.user", select: "username picture" });
-
-		posts.forEach((post) => (post.isFollowing = true));
-
-		if (posts.length < limit) {
-			let additionalPosts = await Post.aggregate([
+			const followingIds = await Follow.aggregate([
 				{
-					$match: { user: { $nin: followingIds }, isPrivate: false, user: { $ne: new mongoose.Types.ObjectId(user._id) } },
+					$match: { follower: new mongoose.Types.ObjectId(user._id) },
+				},
+				{
+					$sample: { size: 10 },
+				},
+				{
+					$project: {
+						following: 1,
+						_id: 0,
+					},
+				},
+			]);
+
+			followingIds.forEach((following, i) => (following = following.following));
+
+			posts = await Post.aggregate([
+				{
+					$match: { user: { $in: followingIds } },
 				},
 				{
 					$sort: {
@@ -192,7 +154,10 @@ export const GET = async (req) => {
 					},
 				},
 				{
-					$sample: { size: limit - posts.length },
+					$skip: startIndex,
+				},
+				{
+					$limit: limit,
 				},
 				{
 					$lookup: {
@@ -217,44 +182,123 @@ export const GET = async (req) => {
 				},
 			]);
 
-			additionalPosts = await Post.populate(additionalPosts, { path: "photos.tags.user", select: "username picture" });
+			posts = await Post.populate(posts, { path: "photos.tags.user", select: "username picture" });
 
-			additionalPosts.forEach((post) => (post.isFollowing = false));
+			posts.forEach((post) => (post.isFollowing = true));
 
-			posts = [...posts, ...additionalPosts];
+			if (posts.length < limit) {
+				let additionalPosts = await Post.aggregate([
+					{
+						$match: { user: { $nin: followingIds }, isPrivate: false, user: { $ne: new mongoose.Types.ObjectId(user._id) } },
+					},
+					{
+						$sort: {
+							_id: -1,
+						},
+					},
+					{
+						$sample: { size: limit - posts.length },
+					},
+					{
+						$lookup: {
+							from: "users",
+							localField: "user",
+							foreignField: "_id",
+							as: "user",
+							pipeline: [
+								{
+									$project: {
+										username: "$username",
+										picture: "$picture",
+									},
+								},
+							],
+						},
+					},
+					{
+						$addFields: {
+							user: { $arrayElemAt: ["$user", 0] },
+						},
+					},
+				]);
+
+				additionalPosts = await Post.populate(additionalPosts, { path: "photos.tags.user", select: "username picture" });
+
+				additionalPosts.forEach((post) => (post.isFollowing = false));
+
+				posts = [...posts, ...additionalPosts];
+			}
+
+			// get all the liked posts
+			const postIds = posts.map((post) => new mongoose.Types.ObjectId(post._id));
+
+			let likedPosts = await Like.find(
+				{
+					post: { $in: postIds },
+					user: new mongoose.Types.ObjectId(user._id),
+				},
+				{ _id: 0, post: 1 }
+			).lean();
+
+			likedPosts.forEach((post, i) => (post = post.post.toString()));
+
+			posts.forEach((post, i) => {
+				post.hasLiked = likedPosts.includes(post._id.toString());
+			});
+
+			// get all the saved posts
+			let savedPosts = await SavedPost.find(
+				{
+					post: { $in: postIds },
+					user: new mongoose.Types.ObjectId(user._id),
+				},
+				{ _id: 0, post: 1 }
+			).lean();
+
+			savedPosts.forEach((post, i) => (post = post.post.toString()));
+
+			posts.forEach((post, i) => {
+				post.hasSaved = savedPosts.includes(post._id.toString());
+			});
+		} else {
+			// if token does not exist(not logged in), return random posts
+
+			posts = await Post.aggregate([
+				{
+					$sample: { size: limit },
+				},
+				{
+					$lookup: {
+						from: "users",
+						localField: "user",
+						foreignField: "_id",
+						as: "user",
+						pipeline: [
+							{
+								$project: {
+									username: "$username",
+									picture: "$picture",
+								},
+							},
+						],
+					},
+				},
+				{
+					$addFields: {
+						user: { $arrayElemAt: ["$user", 0] },
+					},
+				},
+			]);
+
+			posts = await Post.populate(posts, { path: "photos.tags.user", select: "username picture" });
+
+			posts.forEach((post) => (post.isFollowing = true));
+
+			posts.forEach((post) => {
+				post.hasSaved = false;
+				post.hasLiked = false;
+			});
 		}
-
-		// get all the liked posts
-		const postIds = posts.map((post) => new mongoose.Types.ObjectId(post._id));
-
-		let likedPosts = await Like.find(
-			{
-				post: { $in: postIds },
-				user: new mongoose.Types.ObjectId(user._id),
-			},
-			{ _id: 0, post: 1 }
-		).lean();
-
-		likedPosts.forEach((post, i) => (likedPosts[i] = post.post.toString()));
-
-		posts.forEach((post, i) => {
-			posts[i].hasLiked = likedPosts.includes(post._id.toString());
-		});
-
-		// get all the saved posts
-		let savedPosts = await SavedPost.find(
-			{
-				post: { $in: postIds },
-				user: new mongoose.Types.ObjectId(user._id),
-			},
-			{ _id: 0, post: 1 }
-		).lean();
-
-		savedPosts.forEach((post, i) => (savedPosts[i] = post.post.toString()));
-
-		posts.forEach((post, i) => {
-			posts[i].hasSaved = savedPosts.includes(post._id.toString());
-		});
 
 		// dont return likeCount if likeHidden
 		posts.forEach((post) => {

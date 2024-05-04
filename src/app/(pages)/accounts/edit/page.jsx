@@ -1,7 +1,6 @@
 "use client";
 
 import { deleteUser, editUser, editUserVisibility, getUserInfo } from "@/apis/users";
-import useCallApi from "@/hooks/useCallApi";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -11,10 +10,9 @@ const EditAccountPage = () => {
 	const username = session?.user.username;
 	const [userData, setUserData] = useState(null);
 	const [newData, setNewData] = useState({ username: "", nickname: "", biography: "" });
-	const callApi = useCallApi();
 
 	const fetchUserInfo = async () => {
-		const data = await callApi(getUserInfo(username));
+		const data = await getUserInfo(username);
 		setUserData(data);
 		setNewData({ username: data.username, nickname: data.nickname, biography: data.biography });
 	};
@@ -25,13 +23,13 @@ const EditAccountPage = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		await callApi(editUser(newData));
+		await editUser(newData);
 		window.alert("User info updated");
 	};
 
 	const handleChangeVisibility = async (e) => {
 		if (window.confirm(`Are you sure to change the visibility of your account to ${userData.isPrivate ? "public" : "private"}?`)) {
-			await callApi(editUserVisibility(!userData.isPrivate));
+			await editUserVisibility(!userData.isPrivate);
 			setUserData((prev) => ({ ...prev, isPrivate: !prev.isPrivate }));
 			window.alert("Visibility updated");
 		}
@@ -39,7 +37,7 @@ const EditAccountPage = () => {
 
 	const handleDeleteAccount = async (e) => {
 		if (window.confirm("Are you sure to delete your account?")) {
-			await callApi(deleteUser());
+			await deleteUser();
 			await signOut();
 		}
 	};

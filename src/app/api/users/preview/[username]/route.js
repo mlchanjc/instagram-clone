@@ -1,7 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { connectToDB } from "@/utils/database";
 import ApiResponse from "@/utils/ApiResponse";
-import { User, Follow, Post, SavedPost, Like } from "@/models";
+import { User, Follow, Post } from "@/models";
 import mongoose from "mongoose";
 
 export const GET = async (req, { params }) => {
@@ -10,15 +10,17 @@ export const GET = async (req, { params }) => {
 		const username = params.username;
 
 		const token = await getToken({ req });
-		const user = token.user;
+		const user = token?.user;
 
 		const response = await User.findOne({ username }, { email: 0 }).lean();
 		if (!response) return new Response(JSON.stringify({ message: "User not found" }), { status: 400 });
 
-		const isOwner = user._id === response._id.toString();
+		const isOwner = user?._id === response._id.toString();
 
 		// check if the user has followed
-		const isFollowing = await Follow.findOne({ follower: new mongoose.Types.ObjectId(user._id), following: new mongoose.Types.ObjectId(response._id) }, { _id: 1 });
+		const isFollowing = user
+			? await Follow.findOne({ follower: new mongoose.Types.ObjectId(user._id), following: new mongoose.Types.ObjectId(response._id) }, { _id: 1 })
+			: false;
 
 		response.isOwner = isOwner;
 		response.isFollowing = isFollowing ? true : false;
@@ -34,7 +36,7 @@ export const GET = async (req, { params }) => {
 		// dont return likeCount if likeHidden unless is owner
 
 		posts.forEach((post) => {
-			const isPostOwner = post.user._id.toString() === user._id;
+			const isPostOwner = post.user._id.toString() === user?._id;
 			post.isOwner = isPostOwner;
 			if (post.likeHidden && !isOwner) post.likeCount = null;
 		});

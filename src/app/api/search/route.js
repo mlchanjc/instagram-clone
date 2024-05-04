@@ -1,4 +1,3 @@
-import { getToken } from "next-auth/jwt";
 import { connectToDB } from "@/utils/database";
 import { Hashtag, User } from "@/models";
 

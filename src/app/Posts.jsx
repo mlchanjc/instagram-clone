@@ -2,10 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import { getPosts } from "@/apis/posts";
 import Post from "./Post";
-import useCallApi from "@/hooks/useCallApi";
 
 const Posts = () => {
-	const callApi = useCallApi();
 	const fetchedAll = useRef(false);
 	const isFetching = useRef(false);
 	const observerTarget = useRef(null);
@@ -15,7 +13,7 @@ const Posts = () => {
 	const handleFetch = async () => {
 		if (!isFetching.current) {
 			isFetching.current = true;
-			const data = await callApi(getPosts(currentPostCount.current));
+			const data = await getPosts(currentPostCount.current);
 			if (data.length < 6) fetchedAll.current = true;
 			currentPostCount.current += data.length;
 			setPosts((prev) => (prev ? [...prev, ...data] : data));

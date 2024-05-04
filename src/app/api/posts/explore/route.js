@@ -7,9 +7,6 @@ import ApiResponse from "@/utils/ApiResponse";
 export const GET = async (req) => {
 	await connectToDB();
 	try {
-		const token = await getToken({ req });
-		const user = token.user;
-
 		const searchParams = req.nextUrl.searchParams;
 		const limit = parseInt(searchParams.get("limit"));
 
@@ -17,9 +14,13 @@ export const GET = async (req) => {
 			return new Response(JSON.stringify({ message: "Invalid params" }), { status: 400 });
 		}
 
+		const token = await getToken({ req });
+
+		const user = token?.user;
+
 		const posts = await Post.aggregate([
 			{
-				$match: { user: { $ne: new mongoose.Types.ObjectId(user._id) }, isPrivate: false },
+				$match: { user: { $ne: user ? new mongoose.Types.ObjectId(user._id) : null }, isPrivate: false },
 			},
 			{
 				$sort: {

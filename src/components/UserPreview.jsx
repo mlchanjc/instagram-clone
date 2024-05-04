@@ -3,16 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useCallback, memo } from "react";
 import _ from "lodash";
-import useCallApi from "@/hooks/useCallApi";
 import { CiCamera, CiLock } from "react-icons/ci";
+import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
 
 const UserPreview = memo(({ username }) => {
-	const callApi = useCallApi();
-
+	const requiredTokenApi = useRequiredTokenApi();
 	const isFetching = useRef(false);
 	const buttonRef = useRef(null);
 	const userPreviewRef = useRef(null);
-
 	const [data, setData] = useState(null);
 	const [isHovering, setIsHovering] = useState(false);
 
@@ -39,12 +37,12 @@ const UserPreview = memo(({ username }) => {
 		}, 300);
 	};
 
-	const handleFollow = async () => {
-		const { isFollowing } = await callApi(followUser(data.user._id));
+	const handleFollow = requiredTokenApi(async () => {
+		const { isFollowing } = await followUser(data.user._id);
 		setData((prev) => {
 			return { ...prev, user: { ...prev.user, isFollowing, followerCount: prev.user.followerCount + (isFollowing ? 1 : -1) } };
 		});
-	};
+	});
 
 	return (
 		<span>

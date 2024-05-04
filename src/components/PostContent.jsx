@@ -9,25 +9,24 @@ import Comment from "./Comment";
 import PhotoCarousel from "./PhotoCarousel";
 import FormattedText from "./FormattedText";
 import UserPreview from "./UserPreview";
-import useCallApi from "@/hooks/useCallApi";
 import { CommentContext } from "@/contexts/CommentContext";
 import { followUser } from "@/apis/users";
 import { TfiMoreAlt } from "react-icons/tfi";
 import TopModal from "./TopModal";
 import EditPostModal from "./EditPostModal/EditPostModal";
+import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
 
 const PostContent = ({ post, postId, deletePostEffect }) => {
+	const requiredTokenApi = useRequiredTokenApi();
 	const { comments, setComments } = useContext(CommentContext);
-
 	const [postData, setPostData] = useState(post ?? null);
 	const [liked, setLiked] = useState(false);
 	const [saved, setSaved] = useState(false);
 	const [isShowingOptionModal, setIsShowingOptionModal] = useState(false);
 	const [isShowingEditModal, setIsShowingEditModal] = useState(false);
-	const callApi = useCallApi();
 
 	const fetchPostData = async () => {
-		const data = await callApi(getPostById(postId));
+		const data = await getPostById(postId);
 		if (data) {
 			setPostData(data);
 			setComments(data.comments);
@@ -36,31 +35,31 @@ const PostContent = ({ post, postId, deletePostEffect }) => {
 		}
 	};
 
-	const handleLikePost = async () => {
-		const { liked } = await callApi(likePost(postData._id));
+	const handleLikePost = requiredTokenApi(async () => {
+		const { liked } = await likePost(postData._id);
 		setLiked(liked);
-	};
+	});
 
-	const handleSavePost = async () => {
-		const { saved } = await callApi(savePost(postData._id));
+	const handleSavePost = requiredTokenApi(async () => {
+		const { saved } = await savePost(postData._id);
 		setSaved(saved);
-	};
+	});
 
 	const handleUpdatePost = async (editedFields) => {
-		const { newPost } = await callApi(updatePost(postData._id, editedFields));
+		const { newPost } = await updatePost(postData._id, editedFields);
 		setPostData((prev) => ({ ...prev, ...newPost }));
 		setIsShowingOptionModal(false);
 		setIsShowingEditModal(false);
 	};
 
-	const handleFollow = async () => {
-		const { isFollowing } = await callApi(followUser(postData.user._id));
+	const handleFollow = requiredTokenApi(async () => {
+		const { isFollowing } = await followUser(postData.user._id);
 		setPostData((prev) => ({ ...prev, isFollowing }));
-	};
+	});
 
 	const handleDeletePost = async () => {
 		if (window.confirm("Are you sure to delete this post?")) {
-			await callApi(deletePost(postData._id));
+			await deletePost(postData._id);
 			setIsShowingOptionModal(false);
 			deletePostEffect();
 		}

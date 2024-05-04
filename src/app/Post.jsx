@@ -9,26 +9,26 @@ import BottomModal from "@/components/BottomModal";
 import PostContent from "@/components/PostContent";
 import PhotoCarousel from "@/components/PhotoCarousel";
 import FormattedText from "@/components/FormattedText";
-import useCallApi from "@/hooks/useCallApi";
 import UserPreview from "@/components/UserPreview";
+import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
 
 const Post = ({ post }) => {
-	const callApi = useCallApi();
+	const requiredTokenApi = useRequiredTokenApi();
 	const descriptionRef = useRef(null);
 	const [readMore, setReadMore] = useState(null); // init null to disable read more button if not clamped
 	const [liked, setLiked] = useState(post.hasLiked);
 	const [saved, setSaved] = useState(post.hasSaved);
 	const [showPostModal, setShowPostModal] = useState(false);
 
-	const handleLikePost = async () => {
-		const { liked } = await callApi(likePost(post._id));
+	const handleLikePost = requiredTokenApi(async () => {
+		const { liked } = await likePost(post._id);
 		setLiked(liked);
-	};
+	});
 
-	const handleSavePost = async () => {
-		const { saved } = await callApi(savePost(post._id));
+	const handleSavePost = requiredTokenApi(async () => {
+		const { saved } = await savePost(post._id);
 		setSaved(saved);
-	};
+	});
 
 	useEffect(() => {
 		// check if clamped, if yes, enable read more button

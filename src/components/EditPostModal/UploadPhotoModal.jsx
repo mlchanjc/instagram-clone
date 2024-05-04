@@ -2,8 +2,12 @@ import Image from "next/image";
 import { useDropzone } from "react-dropzone";
 import { useContext } from "react";
 import { PhotoContext } from "../../contexts/PostInfoContexts";
+import { useSession } from "next-auth/react";
 
 export default function UploadPhotoModal() {
+	const { data: session, status } = useSession();
+	if (status === "unauthenticated") window.location.href = "/auth";
+
 	const { setPhotos, setTags } = useContext(PhotoContext);
 
 	const { getRootProps } = useDropzone({

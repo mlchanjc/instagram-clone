@@ -8,7 +8,7 @@ export const GET = async (req, { params }) => {
 	await connectToDB();
 	try {
 		const token = await getToken({ req });
-		const user = token.user;
+		const user = token?.user;
 
 		const isValid = mongoose.Types.ObjectId.isValid(params.postId);
 		if (!isValid) return new Response(JSON.stringify({ message: "Post not found" }), { status: 400 });
@@ -28,6 +28,37 @@ export const GET = async (req, { params }) => {
 
 		if (!response) return new Response(JSON.stringify({ message: "Post not found" }), { status: 400 });
 
+		const isPrivate = response.isPrivate;
+		const likeHidden = response.likeHidden;
+
+		if (token) {
+			const hasLiked = await Like.findOne({ user: new mongoose.Types.ObjectId(user._id), post: new mongoose.Types.ObjectId(postId) }, { _id: 1 });
+			response.hasLiked = hasLiked ? true : false;
+
+			const hasSaved = await SavedPost.findOne({ user: new mongoose.Types.ObjectId(user._id), post: new mongoose.Types.ObjectId(postId) }, { _id: 1 });
+			response.hasSaved = hasSaved ? true : false;
+
+			const isFollowing = await Follow.findOne({ follower: new mongoose.Types.ObjectId(user._id), following: new mongoose.Types.ObjectId(response.user._id) }, { _id: 1 });
+			response.isFollowing = isFollowing ? true : false;
+		} else {
+			response.hasLiked = false;
+			response.hasSaved = false;
+			response.isFollowing = false;
+		}
+
+		const isOwner = response.user.username === user?.username;
+		response.isOwner = isOwner;
+
+		// only return to followers or owner if private
+		if (isPrivate && !isOwner && !isFollowing) {
+			return new Response(JSON.stringify({ message: "No permission" }), { status: 403 });
+		}
+
+		// hide likes if hidden unless is owner
+		if (likeHidden && !isOwner) {
+			response.likeCount = null;
+		}
+
 		// dont fetch comments if disabled comment
 		if (!response.commentDisabled) {
 			// get parent comments and check has liked
@@ -38,50 +69,32 @@ export const GET = async (req, { params }) => {
 				})
 				.lean();
 
-			// get all the liked comments
-			const commentIds = comments.map((comment) => comment._id);
+			if (token) {
+				// get all the liked comments
+				const commentIds = comments.map((comment) => comment._id);
 
-			let likedComments = await Like.find(
-				{
-					comment: { $in: commentIds },
-					user: new mongoose.Types.ObjectId(user._id),
-				},
-				{ _id: 0, comment: 1 }
-			).lean();
+				let likedComments = await Like.find(
+					{
+						comment: { $in: commentIds },
+						user: new mongoose.Types.ObjectId(user._id),
+					},
+					{ _id: 0, comment: 1 }
+				).lean();
 
-			likedComments.forEach((comment, i) => (likedComments[i] = comment.comment.toString()));
+				likedComments.forEach((comment) => (comment = comment.comment.toString()));
 
-			comments.forEach((comment, i) => {
-				comments[i].hasLiked = likedComments.includes(comment._id.toString());
-			});
+				comments.forEach((comment) => {
+					comment.hasLiked = likedComments.includes(comment._id.toString());
+				});
+			} else {
+				comments.forEach((comment) => {
+					comment.hasLiked = false;
+				});
+			}
+
 			response.comments = comments;
 		} else {
 			response.comments = [];
-		}
-
-		const hasLiked = await Like.findOne({ user: new mongoose.Types.ObjectId(user._id), post: new mongoose.Types.ObjectId(postId) }, { _id: 1 });
-		response.hasLiked = hasLiked ? true : false;
-
-		const hasSaved = await SavedPost.findOne({ user: new mongoose.Types.ObjectId(user._id), post: new mongoose.Types.ObjectId(postId) }, { _id: 1 });
-		response.hasSaved = hasSaved ? true : false;
-
-		const isFollowing = await Follow.findOne({ follower: new mongoose.Types.ObjectId(user._id), following: new mongoose.Types.ObjectId(response.user._id) }, { _id: 1 });
-		response.isFollowing = isFollowing ? true : false;
-
-		const isOwner = response.user.username === user.username;
-		response.isOwner = isOwner;
-
-		const isPrivate = response.isPrivate;
-		const likeHidden = response.likeHidden;
-
-		// only return to followers or owner if private
-		if (isPrivate && !isOwner && !isFollowing) {
-			return new Response(JSON.stringify({ redirectUrl: `/${response.user.username}`, message: "No permission" }), { status: 403 });
-		}
-
-		// hide likes if hidden unless is owner
-		if (likeHidden && !isOwner) {
-			response.likeCount = null;
 		}
 
 		return ApiResponse(response);

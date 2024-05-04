@@ -4,15 +4,13 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import PostCardGrid from "@/components/PostCardGrid";
-import useCallApi from "@/hooks/useCallApi";
 
 const HashtagPage = () => {
-	const callApi = useCallApi();
 	const { hashtag } = useParams();
 	const [data, setData] = useState(null);
 
 	const fetchPosts = async (startIndex) => {
-		const response = await callApi(getPostsByHashtag(hashtag, startIndex));
+		const response = await getPostsByHashtag(hashtag, startIndex);
 
 		if (!data) setData(response);
 		return response.posts;

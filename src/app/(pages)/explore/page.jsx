@@ -2,14 +2,12 @@
 import { getExplorePosts } from "@/apis/posts";
 import { useState, useEffect } from "react";
 import PostCardGrid from "@/components/PostCardGrid";
-import useCallApi from "@/hooks/useCallApi";
 
 const ExplorePage = () => {
-	const callApi = useCallApi();
 	const [initPostData, setInitPostData] = useState(null);
 
 	const fetchPosts = async (startIndex) => {
-		const response = await callApi(getExplorePosts());
+		const response = await getExplorePosts();
 		if (!initPostData) setInitPostData(response.posts);
 		return response.posts;
 	};

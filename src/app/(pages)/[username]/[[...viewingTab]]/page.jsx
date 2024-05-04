@@ -10,18 +10,18 @@ import { HiOutlineBookmark } from "react-icons/hi2";
 import { PiUserSquareLight } from "react-icons/pi";
 import PostCardGrid from "@/components/PostCardGrid";
 import FormattedText from "@/components/FormattedText";
-import useCallApi from "@/hooks/useCallApi";
 import { CiCamera, CiLock } from "react-icons/ci";
 import CreatePost from "@/components/EditPostModal";
+import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
 
 const UserPage = () => {
+	const requiredTokenApi = useRequiredTokenApi();
 	const router = useRouter();
 	const { username } = useParams();
 	const [userData, setUserData] = useState(null);
 	const [initPostData, setInitPostData] = useState(null);
 	const [viewingTab, setViewingTab] = useState(useParams().viewingTab?.[0] ?? "posts"); // posts / saved / tagged
 	const [showModal, setShowModal] = useState(false);
-	const callApi = useCallApi();
 
 	const fetchData = async (startIndex, init) => {
 		let postType;
@@ -33,13 +33,13 @@ const UserPage = () => {
 			postType = "taggedPosts";
 		}
 
-		const data = await callApi(getUserPost(username, postType, startIndex));
+		const data = await getUserPost(username, postType, startIndex);
 		if (init) setInitPostData(data);
 		return data;
 	};
 
 	const fetchUserInfo = async () => {
-		const data = await callApi(getUserInfo(username));
+		const data = await getUserInfo(username);
 		if (!data?.isOwner && viewingTab === "saved") router.push(`/${username}`);
 		setUserData(data);
 	};
@@ -59,15 +59,15 @@ const UserPage = () => {
 		if (!userData) fetchUserInfo();
 	}, [viewingTab]);
 
-	const handleFollow = async () => {
-		const { isFollowing } = await callApi(followUser(userData._id));
+	const handleFollow = requiredTokenApi(async () => {
+		const { isFollowing } = await followUser(userData._id);
 		setUserData((prev) => {
 			return { ...prev, isFollowing, followerCount: prev.followerCount + (isFollowing ? 1 : -1) };
 		});
 		if (isFollowing && userData.isPrivate && !userData.isOwner && initPostData.length === 0) {
 			fetchData(0, true);
 		}
-	};
+	});
 
 	return (
 		userData && (

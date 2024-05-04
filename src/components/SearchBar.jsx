@@ -7,7 +7,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { RxCross2 } from "react-icons/rx";
 import Link from "next/link";
-import useCallApi from "@/hooks/useCallApi";
 
 const SearchBar = ({ isSearching, setIsSearching }) => {
 	const searchBarRef = useRef(null);
@@ -15,12 +14,11 @@ const SearchBar = ({ isSearching, setIsSearching }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchResult, setSearchResult] = useState(null);
 	const [recentSearch, setRecentSearch] = useState([]);
-	const callApi = useCallApi();
 
 	const handleSearchRef = useRef();
 	handleSearchRef.current = async (searchTerm) => {
 		if (searchTerm !== "") {
-			const data = await callApi(searchUsersAndHashtags(searchTerm, "all", 50));
+			const data = await searchUsersAndHashtags(searchTerm, "all", 50);
 			setSearchResult(data);
 		}
 	};

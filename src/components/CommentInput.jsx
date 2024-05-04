@@ -5,10 +5,11 @@ import _ from "lodash";
 import { searchUsersAndHashtags } from "@/apis/search";
 import Image from "next/image";
 import { createComment } from "@/apis/comments";
-import useCallApi from "@/hooks/useCallApi";
 import { CommentContext } from "@/contexts/CommentContext";
+import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
 
 const CommentInput = memo(({ inPostContent, postId }) => {
+	const requiredTokenApi = useRequiredTokenApi();
 	const { setComments, respondingComment, setRespondingComment } = useContext(CommentContext);
 	const inputRef = useRef(null);
 	const emojiPickerRef = useRef(null);
@@ -16,7 +17,6 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 	const [comment, setComment] = useState("");
 	const [isShowingEmoji, setIsShowingEmoji] = useState(false);
 	const [searchResult, setSearchResult] = useState([]);
-	const callApi = useCallApi();
 
 	const onEmojiClick = (e) => {
 		const pos = caretPos.current;
@@ -31,10 +31,10 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 	const handleSearchRef = useRef();
 	handleSearchRef.current = async (searchTerm) => {
 		if (searchTerm.startsWith("@")) {
-			const data = await callApi(searchUsersAndHashtags(searchTerm.slice(1), "user", 12));
+			const data = await searchUsersAndHashtags(searchTerm.slice(1), "user", 12);
 			setSearchResult([...data]);
 		} else if (searchTerm.startsWith("#")) {
-			const data = await callApi(searchUsersAndHashtags(searchTerm.slice(1), "hashtag", 12));
+			const data = await searchUsersAndHashtags(searchTerm.slice(1), "hashtag", 12);
 			setSearchResult([...data]);
 		}
 	};
@@ -100,8 +100,8 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 		inputRef.current.focus();
 	};
 
-	const handleSubmit = async () => {
-		const { newComment } = await callApi(createComment(comment, postId, respondingComment?._id ?? null));
+	const handleSubmit = requiredTokenApi(async () => {
+		const { newComment } = await createComment(comment, postId, respondingComment?._id ?? null);
 		if (!newComment.parentComment) {
 			setComments((prev) => {
 				return [...prev, newComment];
@@ -122,7 +122,7 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 
 		setComment("");
 		setSearchResult([]);
-	};
+	});
 
 	useEffect(() => {
 		const handleClickOutside = (event) => {

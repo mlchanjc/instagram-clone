@@ -1,9 +1,12 @@
 import axios from "axios";
 import onDownloadProgress from "@/utils/onDownloadProgress";
+import { useMiddlewares } from "./middlewares";
 
 const api = axios.create({
 	baseURL: `${process.env.API_URL}/api/users`,
 });
+
+useMiddlewares(api);
 
 export const getUserInfo = async (username) => {
 	const { data } = await api.get(`/${username}`);

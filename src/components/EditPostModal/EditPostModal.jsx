@@ -3,13 +3,11 @@ import { MdOutlineArrowBack } from "react-icons/md";
 import EditPostInfo from "./EditPostInfo";
 import PhotosPreview from "./PhotosPreview";
 import { PhotoContext, PostContext } from "../../contexts/PostInfoContexts";
-import useCallApi from "@/hooks/useCallApi";
 import { createPost } from "@/apis/posts";
 
 const EditPostModal = ({ editingPost, setIsShowingEditModal, updatePost }) => {
 	const { tags, photos, setPhotos, setCurrentPhoto, setTags } = useContext(PhotoContext);
 	const { description, likeHidden, commentDisabled, setLikeHidden, setCommentDisabled, setDescription } = useContext(PostContext);
-	const callApi = useCallApi();
 
 	const handleLeave = () => {
 		setPhotos([]);
@@ -48,7 +46,7 @@ const EditPostModal = ({ editingPost, setIsShowingEditModal, updatePost }) => {
 			photoArray.push(photo);
 		}
 
-		await callApi(createPost(photoArray, description, likeHidden, commentDisabled));
+		await createPost(photoArray, description, likeHidden, commentDisabled);
 		setPhotos([]);
 		setCurrentPhoto(0);
 		setTags([]);
@@ -71,7 +69,7 @@ const EditPostModal = ({ editingPost, setIsShowingEditModal, updatePost }) => {
 			photoArray.push(photo);
 		}
 
-		await callApi(updatePost({ photos: photoArray, description, likeHidden, commentDisabled }));
+		await updatePost({ photos: photoArray, description, likeHidden, commentDisabled });
 		window.alert("Post updated");
 	};
 

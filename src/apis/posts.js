@@ -1,9 +1,12 @@
 import axios from "axios";
 import onDownloadProgress from "@/utils/onDownloadProgress";
+import { useMiddlewares } from "./middlewares";
 
 const api = axios.create({
 	baseURL: `${process.env.API_URL}/api/posts`,
 });
+
+useMiddlewares(api);
 
 export const createPost = async (photos, description, likeHidden, commentDisabled) => {
 	const { data } = await api.post("/", {

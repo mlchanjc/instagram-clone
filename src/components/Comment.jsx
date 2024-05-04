@@ -5,20 +5,19 @@ import { BsFillHeartFill, BsHeart } from "react-icons/bs";
 import { getChildComments, likeComment } from "@/apis/comments";
 import FormattedText from "./FormattedText";
 import UserPreview from "./UserPreview";
-import useCallApi from "@/hooks/useCallApi";
 import { CommentContext } from "@/contexts/CommentContext";
+import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
 
 const Comment = memo(({ comment }) => {
+	const requiredTokenApi = useRequiredTokenApi();
 	const { setComments, setRespondingComment } = useContext(CommentContext);
-
-	const callApi = useCallApi();
 	const [liked, setLiked] = useState(comment.hasLiked);
 	const [isShowingChild, setIsShowingChild] = useState(false);
 
 	const handleFetchChildComments = async () => {
 		setIsShowingChild((prev) => !prev);
 
-		const data = await callApi(getChildComments(comment._id));
+		const data = await getChildComments(comment._id);
 		setComments((prev) => {
 			let temp = [...prev];
 			for (let i = 0; i < temp.length; i++) {
@@ -31,8 +30,8 @@ const Comment = memo(({ comment }) => {
 		});
 	};
 
-	const handleLikeComment = async (parentComment) => {
-		const { liked } = await callApi(likeComment(comment._id));
+	const handleLikeComment = requiredTokenApi(async (parentComment) => {
+		const { liked } = await likeComment(comment._id);
 		setComments((prev) => {
 			let temp = [...prev];
 			if (parentComment) {
@@ -59,7 +58,7 @@ const Comment = memo(({ comment }) => {
 			return [...temp];
 		});
 		setLiked(liked);
-	};
+	});
 
 	const handleOnClickRespond = async () => {
 		setRespondingComment({ username: comment.user.username, _id: comment.parentComment ?? comment._id });

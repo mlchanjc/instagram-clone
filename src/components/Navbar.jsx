@@ -16,16 +16,13 @@ import CreatePost from "./EditPostModal";
 import { CgAddR } from "react-icons/cg";
 import { PiList, PiListBold } from "react-icons/pi";
 import { SlArrowDown } from "react-icons/sl";
+import { GoSignIn } from "react-icons/go";
 
 const Navbar = memo(() => {
 	const { data: session, status } = useSession();
 	const [isSearching, setIsSearching] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [showMoreList, setShowMoreList] = useState(false);
-
-	if (status === "unauthenticated") {
-		window.location.href = "/auth";
-	}
 
 	return (
 		<>
@@ -96,6 +93,16 @@ const Navbar = memo(() => {
 							<CgAddR size={28} className="group-hover:scale-105 group-active:scale-95 duration-100 flex-shrink-0" />
 							<span className={`${isSearching ? "hidden" : "xl:inline hidden"}`}>Create</span>
 						</button>
+
+						{status === "unauthenticated" && (
+							<Link href={"/auth"}>
+								<button className="group flex items-center gap-x-3 py-2 active:opacity-50 w-full">
+									<GoSignIn size={28} className="group-hover:scale-105 group-active:scale-95 duration-100 flex-shrink-0" />
+									<span className={`${isSearching ? "hidden" : "xl:inline hidden"}`}>Sign In</span>
+								</button>
+							</Link>
+						)}
+
 						{session && (
 							<Link href={`/${session?.user.username}`}>
 								<button className="group flex items-center gap-x-3 py-2 active:opacity-50 w-full">
@@ -108,32 +115,34 @@ const Navbar = memo(() => {
 						)}
 					</div>
 				</div>
-				<div className="relative">
-					<button className="group flex items-center gap-x-3 py-2 active:opacity-50 w-full" onClick={() => setShowMoreList((prev) => !prev)}>
-						{showMoreList ? (
-							<>
-								<PiListBold size={28} className="group-hover:scale-105 group-active:scale-95 duration-100 flex-shrink-0" />
-								<span className={`${isSearching ? "hidden" : "xl:inline hidden font-bold"}`}>More</span>
-							</>
-						) : (
-							<>
-								<PiList size={28} className="group-hover:scale-105 group-active:scale-95 duration-100 flex-shrink-0" />
-								<span className={`${isSearching ? "hidden" : "xl:inline hidden"}`}>More</span>
-							</>
+				{session && (
+					<div className="relative">
+						<button className="group flex items-center gap-x-3 py-2 active:opacity-50 w-full" onClick={() => setShowMoreList((prev) => !prev)}>
+							{showMoreList ? (
+								<>
+									<PiListBold size={28} className="group-hover:scale-105 group-active:scale-95 duration-100 flex-shrink-0" />
+									<span className={`${isSearching ? "hidden" : "xl:inline hidden font-bold"}`}>More</span>
+								</>
+							) : (
+								<>
+									<PiList size={28} className="group-hover:scale-105 group-active:scale-95 duration-100 flex-shrink-0" />
+									<span className={`${isSearching ? "hidden" : "xl:inline hidden"}`}>More</span>
+								</>
+							)}
+						</button>
+						{showMoreList && (
+							<div className="absolute bottom-12 w-full border rounded-md">
+								<ul>
+									<li>
+										<button onClick={() => signOut({ callbackUrl: "/auth", redirect: true })} className="w-full p-4 text-left active:opacity-60">
+											Log out
+										</button>
+									</li>
+								</ul>
+							</div>
 						)}
-					</button>
-					{showMoreList && (
-						<div className="absolute bottom-12 w-full border rounded-md">
-							<ul>
-								<li>
-									<button onClick={() => signOut({ callbackUrl: "/auth", redirect: true })} className="w-full p-4 text-left active:opacity-60">
-										Log out
-									</button>
-								</li>
-							</ul>
-						</div>
-					)}
-				</div>
+					</div>
+				)}
 			</nav>
 
 			{/* navbar layout for breakpoint below md */}
@@ -195,6 +204,15 @@ const Navbar = memo(() => {
 					<button className="group py-2 active:opacity-50" onClick={() => setShowModal(true)}>
 						<CgAddR size={28} className="group-hover:scale-105 group-active:scale-95 duration-100" />
 					</button>
+
+					{status === "unauthenticated" && (
+						<Link href={"/auth"}>
+							<button className="group flex items-center gap-x-3 py-2 active:opacity-50 w-full">
+								<GoSignIn size={28} className="group-hover:scale-105 group-active:scale-95 duration-100 flex-shrink-0" />
+							</button>
+						</Link>
+					)}
+
 					{session && (
 						<Link href={`/${session?.user.username}`}>
 							<button className="group flex py-2 active:opacity-50">

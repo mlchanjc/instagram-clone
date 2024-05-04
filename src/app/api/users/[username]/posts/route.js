@@ -15,7 +15,7 @@ export const GET = async (req, { params }) => {
 		const limit = parseInt(searchParams.get("limit"));
 
 		const token = await getToken({ req });
-		const user = token.user;
+		const user = token?.user;
 
 		if (!["posts", "taggedPosts", "savedPosts", "likedPosts"].includes(postType)) {
 			return new Response(JSON.stringify({ message: "Invalid post type" }), { status: 400 });
@@ -25,16 +25,16 @@ export const GET = async (req, { params }) => {
 		let hasPermission = true;
 		const targetUser = await User.findOne({ username }, { isPrivate: 1 });
 		if (!targetUser) return new Response(JSON.stringify({ message: "User not found" }), { status: 400 });
-		const isOwner = user._id === targetUser._id.toString();
+		const isOwner = user?._id === targetUser._id.toString();
 
 		if (!isOwner) {
 			if (!["savedPosts", "likedPosts"].includes(postType)) {
 				const isPrivate = targetUser.isPrivate;
 				if (isPrivate) {
-					const isFollowing = await Follow.findOne(
-						{ follower: new mongoose.Types.ObjectId(user._id), following: new mongoose.Types.ObjectId(targetUser._id) },
-						{ _id: 1 }
-					);
+					const isFollowing = user
+						? await Follow.findOne({ follower: new mongoose.Types.ObjectId(user._id), following: new mongoose.Types.ObjectId(targetUser._id) }, { _id: 1 })
+						: false;
+
 					if (!isFollowing) hasPermission = false;
 				}
 			} else hasPermission = false;
@@ -142,7 +142,7 @@ export const GET = async (req, { params }) => {
 				posts = posts.filter((post) => {
 					let keep = true;
 					if (post.isPrivate) {
-						if (post.user._id.toString() !== user._id) {
+						if (post.user._id.toString() !== user?._id) {
 							keep = false;
 						}
 					}
@@ -152,7 +152,7 @@ export const GET = async (req, { params }) => {
 
 			// dont return likeCount if likeHidden unless is owner
 			posts.forEach((post) => {
-				const isPostOwner = post.user._id.toString() === user._id;
+				const isPostOwner = post.user._id.toString() === user?._id;
 				post.isOwner = isPostOwner;
 				if (post.likeHidden && !isPostOwner) post.likeCount = null;
 			});
