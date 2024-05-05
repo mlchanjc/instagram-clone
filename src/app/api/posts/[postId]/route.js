@@ -50,7 +50,7 @@ export const GET = async (req, { params }) => {
 		response.isOwner = isOwner;
 
 		// only return to followers or owner if private
-		if (isPrivate && !isOwner && !isFollowing) {
+		if (isPrivate && !isOwner && !response.isFollowing) {
 			return new Response(JSON.stringify({ message: "No permission" }), { status: 403 });
 		}
 

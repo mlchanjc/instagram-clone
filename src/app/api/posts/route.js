@@ -265,6 +265,9 @@ export const GET = async (req) => {
 
 			posts = await Post.aggregate([
 				{
+					$match: { isPrivate: false },
+				},
+				{
 					$sample: { size: limit },
 				},
 				{

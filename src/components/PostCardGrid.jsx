@@ -111,7 +111,7 @@ const PostCardGrid = memo(({ initData, handleFetchMore }) => {
 					)}
 					<div className="w-full grid grid-flow-row grid-cols-3 gap-1 select-none">
 						{postData.map((post, i) => {
-							return <PostCard key={`PostCard${i}`} post={post} index={i} setCurrentPost={setCurrentPost} setShowPostModal={setShowPostModal} />;
+							return <PostCard key={`PostCard-${post._id}`} post={post} index={i} setCurrentPost={setCurrentPost} setShowPostModal={setShowPostModal} />;
 						})}
 					</div>
 				</>

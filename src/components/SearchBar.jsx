@@ -119,7 +119,9 @@ const SearchBar = ({ isSearching, setIsSearching }) => {
 								})}
 							</ul>
 						) : (
-							<strong className="flex items-center justify-center text-gray-500 h-full w-full">No recent searches.</strong>
+							<strong className={`flex items-center justify-center text-gray-500 h-full w-full ${!isSearching && "opacity-0"} duration-300`}>
+								No recent searches.
+							</strong>
 						)}
 					</div>
 				)}

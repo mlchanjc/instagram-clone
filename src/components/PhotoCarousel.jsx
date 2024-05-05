@@ -30,9 +30,10 @@ const PhotoCarousel = memo(({ photos, setLiked, postId }) => {
 	const handleDoubleClick = requiredTokenApi(async () => {
 		clearTimeout(timeout.current);
 		if (!isShowingAnimation) {
-			const { liked } = await likePost(postId);
-			setLiked(liked);
-			setIsShowingAnimation(liked);
+			setLiked((prev) => !prev);
+			const { liked: newLiked } = await likePost(postId);
+			setLiked(newLiked);
+			setIsShowingAnimation(newLiked);
 		}
 	});
 

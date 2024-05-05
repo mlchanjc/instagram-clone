@@ -31,7 +31,8 @@ const Comment = memo(({ comment }) => {
 	};
 
 	const handleLikeComment = requiredTokenApi(async (parentComment) => {
-		const { liked } = await likeComment(comment._id);
+		setLiked((prev) => !prev);
+		const { liked: newLiked } = await likeComment(comment._id);
 		setComments((prev) => {
 			let temp = [...prev];
 			if (parentComment) {
@@ -39,7 +40,7 @@ const Comment = memo(({ comment }) => {
 					if (temp[i]._id === parentComment) {
 						for (let j = 0; j < temp[i].childComments.length; j++) {
 							if (temp[i].childComments[j]._id === comment._id) {
-								temp[i].childComments[j].likeCount = temp[i].childComments[j].likeCount + (liked ? 1 : -1);
+								temp[i].childComments[j].likeCount = temp[i].childComments[j].likeCount + (newLiked ? 1 : -1);
 								break;
 							}
 						}
@@ -49,7 +50,7 @@ const Comment = memo(({ comment }) => {
 			} else {
 				for (let i = 0; i < temp.length; i++) {
 					if (temp[i]._id === comment._id) {
-						temp[i].likeCount = temp[i].likeCount + (liked ? 1 : -1);
+						temp[i].likeCount = temp[i].likeCount + (newLiked ? 1 : -1);
 						break;
 					}
 				}
@@ -57,7 +58,7 @@ const Comment = memo(({ comment }) => {
 
 			return [...temp];
 		});
-		setLiked(liked);
+		setLiked(newLiked);
 	});
 
 	const handleOnClickRespond = async () => {
@@ -104,7 +105,7 @@ const Comment = memo(({ comment }) => {
 
 				{comment.childComments?.length > 0 && (
 					<div className={`flex flex-col gap-y-3 mt-5 ${isShowingChild ? "" : "hidden"}`}>
-						{comment.childComments.map((child, i) => {
+						{comment.childComments.map((child) => {
 							return <Comment key={child._id} comment={child} />;
 						})}
 					</div>

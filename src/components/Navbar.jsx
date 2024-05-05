@@ -12,7 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SearchBar from "./SearchBar";
 import { useState, memo } from "react";
-import CreatePost from "./EditPostModal";
+import CreatePost from "./PostModal";
 import { CgAddR } from "react-icons/cg";
 import { PiList, PiListBold } from "react-icons/pi";
 import { SlArrowDown } from "react-icons/sl";

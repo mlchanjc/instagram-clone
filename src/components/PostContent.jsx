@@ -13,7 +13,7 @@ import { CommentContext } from "@/contexts/CommentContext";
 import { followUser } from "@/apis/users";
 import { TfiMoreAlt } from "react-icons/tfi";
 import TopModal from "./TopModal";
-import EditPostModal from "./EditPostModal/EditPostModal";
+import EditPostModal from "./PostModal/EditPostModal";
 import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
 
 const PostContent = ({ post, postId, deletePostEffect }) => {
@@ -36,13 +36,15 @@ const PostContent = ({ post, postId, deletePostEffect }) => {
 	};
 
 	const handleLikePost = requiredTokenApi(async () => {
-		const { liked } = await likePost(postData._id);
-		setLiked(liked);
+		setLiked((prev) => !prev);
+		const { liked: newLiked } = await likePost(postData._id);
+		setLiked(newLiked);
 	});
 
 	const handleSavePost = requiredTokenApi(async () => {
-		const { saved } = await savePost(postData._id);
-		setSaved(saved);
+		setSaved((prev) => !prev);
+		const { saved: newSaved } = await savePost(postData._id);
+		setSaved(newSaved);
 	});
 
 	const handleUpdatePost = async (editedFields) => {

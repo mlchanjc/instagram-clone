@@ -21,13 +21,15 @@ const Post = ({ post }) => {
 	const [showPostModal, setShowPostModal] = useState(false);
 
 	const handleLikePost = requiredTokenApi(async () => {
-		const { liked } = await likePost(post._id);
-		setLiked(liked);
+		setLiked((prev) => !prev);
+		const { liked: newLiked } = await likePost(post._id);
+		setLiked(newLiked);
 	});
 
 	const handleSavePost = requiredTokenApi(async () => {
-		const { saved } = await savePost(post._id);
-		setSaved(saved);
+		setSaved((prev) => !prev);
+		const { saved: newSaved } = await savePost(post._id);
+		setSaved(newSaved);
 	});
 
 	useEffect(() => {
@@ -78,7 +80,7 @@ const Post = ({ post }) => {
 					{!post.likeHidden && <strong>{`${post.likeCount} like${post.likeCount > 1 ? "s" : ""}`}</strong>}
 
 					<div className="flex">
-						<span className={`${readMore ? "" : "line-clamp-1"} break-words whitespace-pre-wrap max-w-[85%] w-fit`} ref={descriptionRef}>
+						<span className={`${readMore ? "max-w-full" : "line-clamp-1 max-w-[90%]"} break-words whitespace-pre-wrap w-fit`} ref={descriptionRef}>
 							<UserPreview username={post.user.username} />
 							<span className="mx-0.5"></span>
 							<FormattedText text={post.description} />

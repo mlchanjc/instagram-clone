@@ -7,6 +7,10 @@ const FormattedText = memo(({ text }) => {
 	const elements = [];
 	let startIndex = 0;
 
+	const originalLen = text.length;
+
+	text = text.trim();
+
 	const len = text.length;
 
 	// require trimmed text
@@ -68,6 +72,8 @@ const FormattedText = memo(({ text }) => {
 	}
 
 	if (startIndex < len - 1) elements.push(<span key={`text${elements.length}`}>{text.slice(startIndex)}</span>);
+
+	elements.push(<span key={`text${elements.length}`}>{" ".repeat(originalLen - len)}</span>);
 
 	return <span className="whitespace-pre-wrap break-words">{elements}</span>;
 });

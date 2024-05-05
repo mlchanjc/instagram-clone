@@ -31,7 +31,7 @@ export default function TagList() {
 					<ul>
 						{tags[currentPhoto].map((tag, i) => {
 							return (
-								<li key={`taglist${i}`}>
+								<li key={`TagListItem${tag.user._id}`}>
 									<div className="flex items-center space-x-2 p-2 text-sm">
 										<div className="relative rounded-full w-7 h-7 flex-shrink-0">
 											<Image alt="picture" src={tag.user.picture} fill className="object-contain rounded-full" />

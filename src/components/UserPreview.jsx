@@ -95,9 +95,9 @@ const UserPreview = memo(({ username }) => {
 
 				{data?.posts.length > 0 && (
 					<div className="w-full grid grid-flow-row grid-cols-3 gap-1 select-none">
-						{data?.posts.map((post, i) => {
+						{data?.posts.map((post) => {
 							return (
-								<Link href={`/p/${post._id}`} key={`PreviewCard${i}`}>
+								<Link href={`/p/${post._id}`} key={`PreviewCard${post._id}`}>
 									<div className="relative w-full h-full aspect-square group">
 										<Image alt="PostCard" src={post.photos[0].photo} className="object-cover" fill sizes="30vw" priority />
 									</div>

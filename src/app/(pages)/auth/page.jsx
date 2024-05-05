@@ -1,6 +1,7 @@
 "use client";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 
 const page = () => {
@@ -18,13 +19,16 @@ const page = () => {
 						<Image src="/assets/logo.svg" fill className="object-contain duration-150" alt="Logo" priority sizes="80vw" />
 					</div>
 				</div>
-				<div className="h-1/2">
+				<div className="h-1/2 items-center flex space-y-4 flex-col">
 					<button onClick={() => signIn(null, { callbackUrl: "/", redirect: true })} className="flex items-center rounded-sm bg-blue-500 text-white w-64">
 						<div className="p-3 bg-white m-0.5">
 							<FcGoogle size={20} />
 						</div>
 						<strong className="flex-grow">Sign in with Google</strong>
 					</button>
+					<Link href="/" className="hover:scale-105 duration-200 text-gray-500">
+						Return Home
+					</Link>
 				</div>
 			</div>
 		</div>

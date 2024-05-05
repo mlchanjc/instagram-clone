@@ -127,6 +127,7 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+				console.log("Wd");
 				setIsShowingEmoji(false);
 			}
 		};
@@ -207,26 +208,30 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 				className="outline-none w-full resize-none max-h-24"
 				rows={1}
 			/>
-			{comment.length > 0 && <button onClick={handleSubmit}>Send</button>}
+			{comment.length > 0 && (
+				<button className="text-blue-500 hover:text-blue-800 active:text-blue-400" onClick={handleSubmit}>
+					<strong>Send</strong>
+				</button>
+			)}
 
 			{!inPostContent && (
 				<div className="relative flex items-center">
 					<button onClick={() => setIsShowingEmoji((prev) => !prev)} ref={emojiPickerRef}>
 						<HiOutlineEmojiHappy />
+						<div className="absolute -top-4 left-4 -translate-y-full select-none -translate-x-full lg:translate-x-0" onClick={(e) => e.stopPropagation()}>
+							{isShowingEmoji && (
+								<EmojiPicker
+									onEmojiClick={onEmojiClick}
+									autoFocusSearch={false}
+									Theme={"auto"}
+									lazyLoadEmojis={true}
+									previewConfig={{
+										showPreview: false,
+									}}
+								/>
+							)}
+						</div>
 					</button>
-					<div className="absolute -top-4 left-4 -translate-y-full select-none -translate-x-full lg:translate-x-0" onClick={(e) => e.stopPropagation()}>
-						{isShowingEmoji && (
-							<EmojiPicker
-								onEmojiClick={onEmojiClick}
-								autoFocusSearch={false}
-								Theme={"auto"}
-								lazyLoadEmojis={true}
-								previewConfig={{
-									showPreview: false,
-								}}
-							/>
-						)}
-					</div>
 				</div>
 			)}
 		</div>
