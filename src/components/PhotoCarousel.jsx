@@ -5,6 +5,7 @@ import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md"
 import { FaUser } from "react-icons/fa";
 import Image from "next/image";
 import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const PhotoCarousel = memo(({ photos, setLiked, postId }) => {
 	const requiredTokenApi = useRequiredTokenApi();
@@ -12,6 +13,7 @@ const PhotoCarousel = memo(({ photos, setLiked, postId }) => {
 	const [showTags, setShowTags] = useState(false);
 	const [currentPhoto, setCurrentPhoto] = useState(0);
 	const timeout = useRef(null);
+	const throwError = useAsyncError();
 
 	useEffect(() => {
 		if (isShowingAnimation)
@@ -28,12 +30,16 @@ const PhotoCarousel = memo(({ photos, setLiked, postId }) => {
 	};
 
 	const handleDoubleClick = requiredTokenApi(async () => {
-		clearTimeout(timeout.current);
-		if (!isShowingAnimation) {
-			setLiked((prev) => !prev);
-			const { liked: newLiked } = await likePost(postId);
-			setLiked(newLiked);
-			setIsShowingAnimation(newLiked);
+		try {
+			clearTimeout(timeout.current);
+			if (!isShowingAnimation) {
+				setLiked((prev) => !prev);
+				const { liked: newLiked } = await likePost(postId);
+				setLiked(newLiked);
+				setIsShowingAnimation(newLiked);
+			}
+		} catch (error) {
+			throwError(error);
 		}
 	});
 

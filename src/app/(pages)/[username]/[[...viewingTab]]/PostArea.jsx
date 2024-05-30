@@ -10,6 +10,7 @@ import { PiUserSquareLight } from "react-icons/pi";
 import PostCardGrid from "@/components/PostCardGrid";
 import { CiCamera, CiLock } from "react-icons/ci";
 import CreatePost from "@/components/PostModal";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const PostArea = ({ userData }) => {
 	const router = useRouter();
@@ -17,6 +18,7 @@ const PostArea = ({ userData }) => {
 	const [viewingTab, setViewingTab] = useState(useParams().viewingTab?.[0] ?? "posts"); // posts / saved / tagged
 	const [initPostData, setInitPostData] = useState(null);
 	const [showModal, setShowModal] = useState(false);
+	const throwError = useAsyncError();
 
 	if (!userData?.isOwner && viewingTab === "saved") router.push(`/${username}`);
 
@@ -30,9 +32,13 @@ const PostArea = ({ userData }) => {
 			postType = "taggedPosts";
 		}
 
-		const data = await getUserPost(username, postType, startIndex);
-		if (init) setInitPostData(data);
-		return data;
+		try {
+			const data = await getUserPost(username, postType, startIndex);
+			if (init) setInitPostData(data);
+			return data;
+		} catch (error) {
+			throwError(error);
+		}
 	};
 
 	useEffect(() => {

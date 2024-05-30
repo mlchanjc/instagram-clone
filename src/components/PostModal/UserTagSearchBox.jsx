@@ -4,24 +4,30 @@ import Image from "next/image";
 import _ from "lodash";
 import { searchUsersAndHashtags } from "@/apis/search";
 import { MdCancel } from "react-icons/md";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const UserTagSearchBox = ({ tagSearchX, tagSearchY, showTagSearch, mousePos, setShowTagSearch }) => {
 	const searchBarRef = useRef(null);
 	const [searchResult, setSearchResult] = useState([]);
 	const { currentPhoto, tags, setTags } = useContext(PhotoContext);
+	const throwError = useAsyncError();
 
 	const handleSearchRef = useRef();
 	handleSearchRef.current = async (searchTerm) => {
 		if (searchTerm !== "") {
-			const data = await searchUsersAndHashtags(searchTerm, "user", 12);
-			let i = 0;
-			while (i < data.length) {
-				const isInTagList = tags[currentPhoto].some((tag) => tag.user._id === data[i]._id);
-				if (isInTagList) data.splice(i, 1);
-				else i++;
-			}
+			try {
+				const data = await searchUsersAndHashtags(searchTerm, "user", 12);
+				let i = 0;
+				while (i < data.length) {
+					const isInTagList = tags[currentPhoto].some((tag) => tag.user._id === data[i]._id);
+					if (isInTagList) data.splice(i, 1);
+					else i++;
+				}
 
-			setSearchResult([...data]);
+				setSearchResult([...data]);
+			} catch (error) {
+				throwError(error);
+			}
 		}
 	};
 

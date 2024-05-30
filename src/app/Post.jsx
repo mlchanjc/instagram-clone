@@ -11,6 +11,7 @@ import PhotoCarousel from "@/components/PhotoCarousel";
 import FormattedText from "@/components/FormattedText";
 import UserPreview from "@/components/UserPreview";
 import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const Post = ({ post }) => {
 	const requiredTokenApi = useRequiredTokenApi();
@@ -19,17 +20,26 @@ const Post = ({ post }) => {
 	const [liked, setLiked] = useState(post.hasLiked);
 	const [saved, setSaved] = useState(post.hasSaved);
 	const [showPostModal, setShowPostModal] = useState(false);
+	const throwError = useAsyncError();
 
 	const handleLikePost = requiredTokenApi(async () => {
-		setLiked((prev) => !prev);
-		const { liked: newLiked } = await likePost(post._id);
-		setLiked(newLiked);
+		try {
+			setLiked((prev) => !prev);
+			const { liked: newLiked } = await likePost(post._id);
+			setLiked(newLiked);
+		} catch (error) {
+			throwError(error);
+		}
 	});
 
 	const handleSavePost = requiredTokenApi(async () => {
-		setSaved((prev) => !prev);
-		const { saved: newSaved } = await savePost(post._id);
-		setSaved(newSaved);
+		try {
+			setSaved((prev) => !prev);
+			const { saved: newSaved } = await savePost(post._id);
+			setSaved(newSaved);
+		} catch (error) {
+			throwError(error);
+		}
 	});
 
 	useEffect(() => {

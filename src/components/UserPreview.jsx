@@ -5,6 +5,7 @@ import { useState, useRef, useCallback, memo } from "react";
 import _ from "lodash";
 import { CiCamera, CiLock } from "react-icons/ci";
 import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const UserPreview = memo(({ username }) => {
 	const requiredTokenApi = useRequiredTokenApi();
@@ -13,6 +14,7 @@ const UserPreview = memo(({ username }) => {
 	const userPreviewRef = useRef(null);
 	const [data, setData] = useState(null);
 	const [isHovering, setIsHovering] = useState(false);
+	const throwError = useAsyncError();
 
 	const handleOnMouseLeaveRef = useRef();
 	handleOnMouseLeaveRef.current = async () => {
@@ -26,22 +28,30 @@ const UserPreview = memo(({ username }) => {
 
 	const handleOnMouseHover = () => {
 		setTimeout(async () => {
-			if (userPreviewRef.current?.matches(":hover") || buttonRef.current?.matches(":hover")) {
-				setIsHovering(true);
-				if (!isFetching.current && !data) {
-					isFetching.current = true;
-					const data = await getUserPreview(username);
-					setData(data);
+			try {
+				if (userPreviewRef.current?.matches(":hover") || buttonRef.current?.matches(":hover")) {
+					setIsHovering(true);
+					if (!isFetching.current && !data) {
+						isFetching.current = true;
+						const data = await getUserPreview(username);
+						setData(data);
+					}
 				}
+			} catch (error) {
+				throwError(error);
 			}
 		}, 300);
 	};
 
 	const handleFollow = requiredTokenApi(async () => {
-		const { isFollowing } = await followUser(data.user._id);
-		setData((prev) => {
-			return { ...prev, user: { ...prev.user, isFollowing, followerCount: prev.user.followerCount + (isFollowing ? 1 : -1) } };
-		});
+		try {
+			const { isFollowing } = await followUser(data.user._id);
+			setData((prev) => {
+				return { ...prev, user: { ...prev.user, isFollowing, followerCount: prev.user.followerCount + (isFollowing ? 1 : -1) } };
+			});
+		} catch (error) {
+			throwError(error);
+		}
 	});
 
 	return (

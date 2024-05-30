@@ -5,6 +5,7 @@ import PostContent from "@/components/PostContent";
 import { MdOutlineArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
 import LoadingPostCardGrid from "@/components/LoadingPostCardGrid";
 import { usePathname } from "next/navigation";
+import useAsyncError from "@/hooks/useAsyncError";
 
 //handleFetchMore(startIndex) return array of posts
 const PostCardGrid = memo(({ initData, handleFetchMore }) => {
@@ -16,15 +17,20 @@ const PostCardGrid = memo(({ initData, handleFetchMore }) => {
 	const [postData, setPostData] = useState(null);
 	const [currentPost, setCurrentPost] = useState(0);
 	const [showPostModal, setShowPostModal] = useState(false);
+	const throwError = useAsyncError();
 
 	const handleFetch = async () => {
 		if (currentPostCount.current !== undefined && !isFetching.current) {
-			isFetching.current = true;
-			const data = await handleFetchMore(currentPostCount.current);
-			if (data.length < 12) fetchedAll.current = true;
-			currentPostCount.current += data.length;
-			setPostData((prev) => (prev ? [...prev, ...data] : data));
-			isFetching.current = false;
+			try {
+				isFetching.current = true;
+				const data = await handleFetchMore(currentPostCount.current);
+				if (data.length < 12) fetchedAll.current = true;
+				currentPostCount.current += data.length;
+				setPostData((prev) => (prev ? [...prev, ...data] : data));
+				isFetching.current = false;
+			} catch (error) {
+				throwError(error);
+			}
 		}
 	};
 

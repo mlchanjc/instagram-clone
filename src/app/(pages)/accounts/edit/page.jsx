@@ -1,20 +1,26 @@
 "use client";
 
 import { deleteUser, editUser, editUserVisibility, getUserInfo } from "@/apis/users";
+import useAsyncError from "@/hooks/useAsyncError";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
 const EditAccountPage = () => {
-	const { data: session, status } = useSession();
+	const { data: session, status, update } = useSession();
 	const username = session?.user.username;
 	const [userData, setUserData] = useState(null);
 	const [newData, setNewData] = useState({ username: "", nickname: "", biography: "" });
+	const throwError = useAsyncError();
 
 	const fetchUserInfo = async () => {
-		const data = await getUserInfo(username);
-		setUserData(data);
-		setNewData({ username: data.username, nickname: data.nickname, biography: data.biography });
+		try {
+			const data = await getUserInfo(username);
+			setUserData(data);
+			setNewData({ username: data.username, nickname: data.nickname, biography: data.biography });
+		} catch (error) {
+			throwError(error);
+		}
 	};
 
 	useEffect(() => {
@@ -23,22 +29,35 @@ const EditAccountPage = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		await editUser(newData);
-		window.alert("User info updated");
+		try {
+			await editUser(newData);
+			update();
+			window.alert("User info updated");
+		} catch (error) {
+			throwError(error);
+		}
 	};
 
 	const handleChangeVisibility = async (e) => {
 		if (window.confirm(`Are you sure to change the visibility of your account to ${userData.isPrivate ? "public" : "private"}?`)) {
-			await editUserVisibility(!userData.isPrivate);
-			setUserData((prev) => ({ ...prev, isPrivate: !prev.isPrivate }));
-			window.alert("Visibility updated");
+			try {
+				await editUserVisibility(!userData.isPrivate);
+				setUserData((prev) => ({ ...prev, isPrivate: !prev.isPrivate }));
+				window.alert("Visibility updated");
+			} catch (error) {
+				throwError(error);
+			}
 		}
 	};
 
 	const handleDeleteAccount = async (e) => {
 		if (window.confirm("Are you sure to delete your account?")) {
-			await deleteUser();
-			await signOut();
+			try {
+				await deleteUser();
+				await signOut();
+			} catch (error) {
+				throwError(error);
+			}
 		}
 	};
 

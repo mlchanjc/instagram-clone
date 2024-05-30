@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { getPosts } from "@/apis/posts";
 import Post from "./Post";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const Posts = () => {
 	const fetchedAll = useRef(false);
@@ -9,15 +10,20 @@ const Posts = () => {
 	const observerTarget = useRef(null);
 	const currentPostCount = useRef(0);
 	const [posts, setPosts] = useState([]);
+	const throwError = useAsyncError();
 
 	const handleFetch = async () => {
 		if (!isFetching.current) {
 			isFetching.current = true;
-			const data = await getPosts(currentPostCount.current);
-			if (data.length < 6) fetchedAll.current = true;
-			currentPostCount.current += data.length;
-			setPosts((prev) => (prev ? [...prev, ...data] : data));
-			isFetching.current = false;
+			try {
+				const data = await getPosts(currentPostCount.current);
+				if (data.length < 6) fetchedAll.current = true;
+				currentPostCount.current += data.length;
+				setPosts((prev) => (prev ? [...prev, ...data] : data));
+				isFetching.current = false;
+			} catch (error) {
+				throwError(error);
+			}
 		}
 	};
 

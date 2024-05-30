@@ -12,7 +12,11 @@ const handler = NextAuth({
 	],
 
 	callbacks: {
-		async jwt({ token, user, account }) {
+		async jwt({ token, user, account, trigger }) {
+			if (trigger === "update") {
+				const result = await User.findOne({ email: token.email }, { _id: 1, username: 1, nickname: 1, picture: 1 }).lean();
+				token.user = result;
+			}
 			if (account && user) {
 				const result = await User.findOne({ email: user?.email }, { _id: 1, username: 1, nickname: 1, picture: 1 }).lean();
 				token.user = result;

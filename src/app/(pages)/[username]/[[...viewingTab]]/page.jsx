@@ -8,26 +8,36 @@ import { useParams } from "next/navigation";
 import FormattedText from "@/components/FormattedText";
 import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
 import PostArea from "./PostArea";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const UserPage = () => {
 	const requiredTokenApi = useRequiredTokenApi();
 	const { username } = useParams();
 	const [userData, setUserData] = useState(null);
+	const throwError = useAsyncError();
 
 	useEffect(() => {
 		const fetchUserInfo = async () => {
-			const data = await getUserInfo(username);
-			setUserData(data);
+			try {
+				const data = await getUserInfo(username);
+				setUserData(data);
+			} catch (error) {
+				throwError(error);
+			}
 		};
 
 		fetchUserInfo();
 	}, []);
 
 	const handleFollow = requiredTokenApi(async () => {
-		const { isFollowing } = await followUser(userData._id);
-		setUserData((prev) => {
-			return { ...prev, isFollowing, followerCount: prev.followerCount + (isFollowing ? 1 : -1) };
-		});
+		try {
+			const { isFollowing } = await followUser(userData._id);
+			setUserData((prev) => {
+				return { ...prev, isFollowing, followerCount: prev.followerCount + (isFollowing ? 1 : -1) };
+			});
+		} catch (error) {
+			throwError(error);
+		}
 	});
 
 	return (

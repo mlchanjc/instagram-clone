@@ -4,16 +4,22 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import PostCardGrid from "@/components/PostCardGrid";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const HashtagPage = () => {
 	const { hashtag } = useParams();
 	const [data, setData] = useState(null);
+	const throwError = useAsyncError();
 
 	const fetchPosts = async (startIndex) => {
-		const response = await getPostsByHashtag(hashtag, startIndex);
+		try {
+			const response = await getPostsByHashtag(hashtag, startIndex);
 
-		if (!data) setData(response);
-		return response.posts;
+			if (!data) setData(response);
+			return response.posts;
+		} catch (error) {
+			throwError(error);
+		}
 	};
 
 	useEffect(() => {

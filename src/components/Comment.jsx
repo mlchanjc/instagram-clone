@@ -7,58 +7,67 @@ import FormattedText from "./FormattedText";
 import UserPreview from "./UserPreview";
 import { CommentContext } from "@/contexts/CommentContext";
 import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const Comment = memo(({ comment }) => {
 	const requiredTokenApi = useRequiredTokenApi();
 	const { setComments, setRespondingComment } = useContext(CommentContext);
 	const [liked, setLiked] = useState(comment.hasLiked);
 	const [isShowingChild, setIsShowingChild] = useState(false);
+	const throwError = useAsyncError();
 
 	const handleFetchChildComments = async () => {
-		setIsShowingChild((prev) => !prev);
-
-		const data = await getChildComments(comment._id);
-		setComments((prev) => {
-			let temp = [...prev];
-			for (let i = 0; i < temp.length; i++) {
-				if (temp[i]._id === comment._id) {
-					temp[i].childComments = data;
-					break;
+		try {
+			setIsShowingChild((prev) => !prev);
+			const data = await getChildComments(comment._id);
+			setComments((prev) => {
+				let temp = [...prev];
+				for (let i = 0; i < temp.length; i++) {
+					if (temp[i]._id === comment._id) {
+						temp[i].childComments = data;
+						break;
+					}
 				}
-			}
-			return [...temp];
-		});
+				return [...temp];
+			});
+		} catch (error) {
+			throwError(error);
+		}
 	};
 
 	const handleLikeComment = requiredTokenApi(async (parentComment) => {
-		setLiked((prev) => !prev);
-		const { liked: newLiked } = await likeComment(comment._id);
-		setComments((prev) => {
-			let temp = [...prev];
-			if (parentComment) {
-				for (let i = 0; i < temp.length; i++) {
-					if (temp[i]._id === parentComment) {
-						for (let j = 0; j < temp[i].childComments.length; j++) {
-							if (temp[i].childComments[j]._id === comment._id) {
-								temp[i].childComments[j].likeCount = temp[i].childComments[j].likeCount + (newLiked ? 1 : -1);
-								break;
+		try {
+			setLiked((prev) => !prev);
+			const { liked: newLiked } = await likeComment(comment._id);
+			setComments((prev) => {
+				let temp = [...prev];
+				if (parentComment) {
+					for (let i = 0; i < temp.length; i++) {
+						if (temp[i]._id === parentComment) {
+							for (let j = 0; j < temp[i].childComments.length; j++) {
+								if (temp[i].childComments[j]._id === comment._id) {
+									temp[i].childComments[j].likeCount = temp[i].childComments[j].likeCount + (newLiked ? 1 : -1);
+									break;
+								}
 							}
+							break;
 						}
-						break;
+					}
+				} else {
+					for (let i = 0; i < temp.length; i++) {
+						if (temp[i]._id === comment._id) {
+							temp[i].likeCount = temp[i].likeCount + (newLiked ? 1 : -1);
+							break;
+						}
 					}
 				}
-			} else {
-				for (let i = 0; i < temp.length; i++) {
-					if (temp[i]._id === comment._id) {
-						temp[i].likeCount = temp[i].likeCount + (newLiked ? 1 : -1);
-						break;
-					}
-				}
-			}
 
-			return [...temp];
-		});
-		setLiked(newLiked);
+				return [...temp];
+			});
+			setLiked(newLiked);
+		} catch (error) {
+			throwError(error);
+		}
 	});
 
 	const handleOnClickRespond = async () => {

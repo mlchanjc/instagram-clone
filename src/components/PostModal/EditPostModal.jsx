@@ -4,10 +4,12 @@ import EditPostInfo from "./EditPostInfo";
 import PhotosPreview from "./PhotosPreview";
 import { PhotoContext, PostContext } from "../../contexts/PostInfoContexts";
 import { createPost } from "@/apis/posts";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const EditPostModal = ({ editingPost, setIsShowingEditModal, updatePost }) => {
 	const { tags, photos, setPhotos, setCurrentPhoto, setTags } = useContext(PhotoContext);
 	const { description, likeHidden, commentDisabled, setLikeHidden, setCommentDisabled, setDescription } = useContext(PostContext);
+	const throwError = useAsyncError();
 
 	const handleLeave = () => {
 		setPhotos([]);
@@ -46,7 +48,11 @@ const EditPostModal = ({ editingPost, setIsShowingEditModal, updatePost }) => {
 			photoArray.push(photo);
 		}
 
-		await createPost(photoArray, description, likeHidden, commentDisabled);
+		try {
+			await createPost(photoArray, description, likeHidden, commentDisabled);
+		} catch (error) {
+			throwError(error);
+		}
 		setPhotos([]);
 		setCurrentPhoto(0);
 		setTags([]);
@@ -68,9 +74,12 @@ const EditPostModal = ({ editingPost, setIsShowingEditModal, updatePost }) => {
 			};
 			photoArray.push(photo);
 		}
-
-		await updatePost({ photos: photoArray, description, likeHidden, commentDisabled });
-		window.alert("Post updated");
+		try {
+			await updatePost({ photos: photoArray, description, likeHidden, commentDisabled });
+			window.alert("Post updated");
+		} catch (error) {
+			throwError(error);
+		}
 	};
 
 	return (

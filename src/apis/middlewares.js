@@ -3,8 +3,7 @@ export const useMiddlewares = (api) => {
 		(response) => {
 			return response;
 		},
-		async (error) => {
-			console.log(error);
+		(error) => {
 			throw new Error(error.response?.data?.message ?? "An unknown error has occurred");
 		}
 	);

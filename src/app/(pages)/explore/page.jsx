@@ -2,14 +2,20 @@
 import { getExplorePosts } from "@/apis/posts";
 import { useState, useEffect } from "react";
 import PostCardGrid from "@/components/PostCardGrid";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const ExplorePage = () => {
 	const [initPostData, setInitPostData] = useState(null);
+	const throwError = useAsyncError();
 
-	const fetchPosts = async (startIndex) => {
-		const response = await getExplorePosts();
-		if (!initPostData) setInitPostData(response.posts);
-		return response.posts;
+	const fetchPosts = async () => {
+		try {
+			const response = await getExplorePosts();
+			if (!initPostData) setInitPostData(response.posts);
+			return response.posts;
+		} catch (error) {
+			throwError(error);
+		}
 	};
 
 	useEffect(() => {

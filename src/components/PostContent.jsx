@@ -15,6 +15,7 @@ import { TfiMoreAlt } from "react-icons/tfi";
 import TopModal from "./TopModal";
 import EditPostModal from "./PostModal/EditPostModal";
 import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const PostContent = ({ post, postId, deletePostEffect }) => {
 	const requiredTokenApi = useRequiredTokenApi();
@@ -24,46 +25,71 @@ const PostContent = ({ post, postId, deletePostEffect }) => {
 	const [saved, setSaved] = useState(false);
 	const [isShowingOptionModal, setIsShowingOptionModal] = useState(false);
 	const [isShowingEditModal, setIsShowingEditModal] = useState(false);
+	const throwError = useAsyncError();
 
 	const fetchPostData = async () => {
-		const data = await getPostById(postId);
-		if (data) {
-			setPostData(data);
-			setComments(data.comments);
-			setLiked(data.hasLiked);
-			setSaved(data.hasSaved);
+		try {
+			const data = await getPostById(postId);
+			if (data) {
+				setPostData(data);
+				setComments(data.comments);
+				setLiked(data.hasLiked);
+				setSaved(data.hasSaved);
+			}
+		} catch (error) {
+			throwError(error);
 		}
 	};
 
 	const handleLikePost = requiredTokenApi(async () => {
-		setLiked((prev) => !prev);
-		const { liked: newLiked } = await likePost(postData._id);
-		setLiked(newLiked);
+		try {
+			setLiked((prev) => !prev);
+			const { liked: newLiked } = await likePost(postData._id);
+			setLiked(newLiked);
+		} catch (error) {
+			throwError(error);
+		}
 	});
 
 	const handleSavePost = requiredTokenApi(async () => {
-		setSaved((prev) => !prev);
-		const { saved: newSaved } = await savePost(postData._id);
-		setSaved(newSaved);
+		try {
+			setSaved((prev) => !prev);
+			const { saved: newSaved } = await savePost(postData._id);
+			setSaved(newSaved);
+		} catch (error) {
+			throwError(error);
+		}
 	});
 
 	const handleUpdatePost = async (editedFields) => {
-		const { newPost } = await updatePost(postData._id, editedFields);
-		setPostData((prev) => ({ ...prev, ...newPost }));
-		setIsShowingOptionModal(false);
-		setIsShowingEditModal(false);
+		try {
+			const { newPost } = await updatePost(postData._id, editedFields);
+			setPostData((prev) => ({ ...prev, ...newPost }));
+			setIsShowingOptionModal(false);
+			setIsShowingEditModal(false);
+		} catch (error) {
+			throwError(error);
+		}
 	};
 
 	const handleFollow = requiredTokenApi(async () => {
-		const { isFollowing } = await followUser(postData.user._id);
-		setPostData((prev) => ({ ...prev, isFollowing }));
+		try {
+			const { isFollowing } = await followUser(postData.user._id);
+			setPostData((prev) => ({ ...prev, isFollowing }));
+		} catch (error) {
+			throwError(error);
+		}
 	});
 
 	const handleDeletePost = async () => {
-		if (window.confirm("Are you sure to delete this post?")) {
-			await deletePost(postData._id);
-			setIsShowingOptionModal(false);
-			deletePostEffect();
+		try {
+			if (window.confirm("Are you sure to delete this post?")) {
+				await deletePost(postData._id);
+				setIsShowingOptionModal(false);
+				deletePostEffect();
+			}
+		} catch (error) {
+			throwError(error);
 		}
 	};
 

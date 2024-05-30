@@ -7,6 +7,7 @@ import Image from "next/image";
 import { createComment } from "@/apis/comments";
 import { CommentContext } from "@/contexts/CommentContext";
 import useRequiredTokenApi from "@/hooks/useRequiredTokenApi";
+import useAsyncError from "@/hooks/useAsyncError";
 
 const CommentInput = memo(({ inPostContent, postId }) => {
 	const requiredTokenApi = useRequiredTokenApi();
@@ -17,6 +18,7 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 	const [comment, setComment] = useState("");
 	const [isShowingEmoji, setIsShowingEmoji] = useState(false);
 	const [searchResult, setSearchResult] = useState([]);
+	const throwError = useAsyncError();
 
 	const onEmojiClick = (e) => {
 		const pos = caretPos.current;
@@ -30,12 +32,16 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 
 	const handleSearchRef = useRef();
 	handleSearchRef.current = async (searchTerm) => {
-		if (searchTerm.startsWith("@")) {
-			const data = await searchUsersAndHashtags(searchTerm.slice(1), "user", 12);
-			setSearchResult([...data]);
-		} else if (searchTerm.startsWith("#")) {
-			const data = await searchUsersAndHashtags(searchTerm.slice(1), "hashtag", 12);
-			setSearchResult([...data]);
+		try {
+			if (searchTerm.startsWith("@")) {
+				const data = await searchUsersAndHashtags(searchTerm.slice(1), "user", 12);
+				setSearchResult([...data]);
+			} else if (searchTerm.startsWith("#")) {
+				const data = await searchUsersAndHashtags(searchTerm.slice(1), "hashtag", 12);
+				setSearchResult([...data]);
+			}
+		} catch (error) {
+			throwError(error);
 		}
 	};
 
@@ -101,33 +107,36 @@ const CommentInput = memo(({ inPostContent, postId }) => {
 	};
 
 	const handleSubmit = requiredTokenApi(async () => {
-		const { newComment } = await createComment(comment, postId, respondingComment?._id ?? null);
-		if (!newComment.parentComment) {
-			setComments((prev) => {
-				return [...prev, newComment];
-			});
-		} else {
-			setComments((prev) => {
-				let temp = [...prev];
-				for (let i = 0; i < temp.length; i++) {
-					if (temp[i]._id === newComment.parentComment) {
-						temp[i].childCommentCount++;
-						temp[i].childComments = [...(temp[i].childComments ?? []), newComment];
-						break;
+		try {
+			const { newComment } = await createComment(comment, postId, respondingComment?._id ?? null);
+			if (!newComment.parentComment) {
+				setComments((prev) => {
+					return [...prev, newComment];
+				});
+			} else {
+				setComments((prev) => {
+					let temp = [...prev];
+					for (let i = 0; i < temp.length; i++) {
+						if (temp[i]._id === newComment.parentComment) {
+							temp[i].childCommentCount++;
+							temp[i].childComments = [...(temp[i].childComments ?? []), newComment];
+							break;
+						}
 					}
-				}
-				return [...temp];
-			});
-		}
+					return [...temp];
+				});
+			}
 
-		setComment("");
-		setSearchResult([]);
+			setComment("");
+			setSearchResult([]);
+		} catch (error) {
+			throwError(error);
+		}
 	});
 
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
-				console.log("Wd");
 				setIsShowingEmoji(false);
 			}
 		};
