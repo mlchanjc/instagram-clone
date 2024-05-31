@@ -2,6 +2,7 @@ import { connectToDB } from "@/utils/database";
 import mongoose from "mongoose";
 
 export const POST = async (req) => {
+	return new Response("done reset", { status: 200 });
 	await connectToDB();
 	try {
 		const collections = mongoose.connection.db.listCollections();

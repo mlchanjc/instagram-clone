@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { faker } from "@faker-js/faker";
 
 export const POST = async (req) => {
+	return new Response("done bulk post", { status: 200 });
 	await connectToDB();
 	const session = await mongoose.startSession();
 	session.startTransaction();

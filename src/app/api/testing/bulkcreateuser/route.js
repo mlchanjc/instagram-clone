@@ -3,6 +3,7 @@ import { User } from "@/models";
 import { faker } from "@faker-js/faker";
 
 export const POST = async (req) => {
+	return new Response("done bulk post", { status: 200 });
 	await connectToDB();
 	try {
 		const fakeUsers = [];
